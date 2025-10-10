@@ -24,8 +24,8 @@ O foco principal deste projeto está na **modelagem do sistema, arquitetura back
 Este projeto foi construído utilizando as seguintes tecnologias:
 
 * **Backend Framework:** Python (com Django)
-* **Database:** (A ser definido, ex: PostgreSQL, SQLite)
-* **Frontend:** HTML/CSS (Inicialmente para prototipação)
+* **Database:** SQLite
+* **Frontend:** HTML/CSS
 * **Versionamento:** Git & GitHub
 
 ---
@@ -43,95 +43,26 @@ O sistema SGEA oferece as seguintes funcionalidades principais:
 
 ## 🚀 Como Executar o Projeto
 
-Para ter uma cópia local do projeto rodando para desenvolvimento e testes, siga os passos abaixo:
+Para ter uma cópia local do projeto rodando para desenvolvimento e testes
 
 ### 📋 Pré-requisitos
 
 Você precisará ter instalado em sua máquina:
 
-* **Python 3.x**
-* **pip** (gerenciador de pacotes Python)
-
-### ⚙️ Instalação (Backend)
-
-1.  **Clone o repositório:**
-    ```bash
-    git clone [Link do seu repositório]
-    cd nome-do-seu-repositorio
-    ```
-
-2.  **Crie e ative um ambiente virtual:**
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate  # No Linux/macOS
-    .\venv\Scripts\activate   # No Windows
-    ```
-
-3.  **Instale as dependências do projeto:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-    *(Crie o arquivo `requirements.txt` com `pip freeze > requirements.txt`)*
-
-4.  **Configuração do Banco de Dados:**
-    * Configure as variáveis de ambiente do seu banco de dados (ex: no arquivo `.env` ou em `settings.py`).
-    * **Execute as migrações do Django:**
-        ```bash
-        python manage.py makemigrations
-        python manage.py migrate
-        ```
-    *(Você também pode precisar criar um superusuário: `python manage.py createsuperuser`)*
-
-5.  **Rode o servidor de desenvolvimento:**
-    ```bash
-    python manage.py runserver
-    ```
-
-6.  **Acesse a Aplicação:**
-    Abra seu navegador e acesse: `http://127.0.0.1:8000/`
+* **Python 3.13.7
+* **pip django**
 
 ---
 
-## 🖼️ Protótipo da Interface (Layout)
+## 🤝 Contribuição
 
-O layout das telas da aplicação pode ser visualizado no link abaixo:
-
-* **Protótipo de Interface:** [Link para o Figma, Adobe XD ou diretório HTML/CSS inicial]
-
-*(**Nota:** Para a entrega do projeto, o protótipo visual da interface é fornecido, mas nem todas as interfaces podem estar totalmente funcionais no código. O foco principal é a lógica **backend** e os **Modelos** do Django).*
+Sinta-se à vontade para contribuir! Se tiver sugestões ou quiser reportar bugs.
 
 ---
 
-## 🧩 Estrutura do Projeto e Documentação
+## 👨‍💻 Autores
 
-O projeto está estruturado em aplicações (apps) do Django para organizar as funcionalidades e seguir as boas práticas.
+| **Bernardo de Carvalho Leite** |
+| https://www.linkedin.com/in/bernardo-de-carvalho-leite-4a509a323/ |
 
-* **Documento de Requisitos e Casos de Uso:** O detalhamento dos requisitos funcionais e os 5 casos de uso principais (Cadastro de Usuários, Cadastro de Eventos, Inscrição, Emissão de Certificados e Autenticação) está disponível no arquivo **`[caminho/para/documento-requisitos.pdf]`**.
-* **Diagrama do Banco de Dados:** O diagrama lógico do banco e o script SQL estão no diretório **`[caminho/para/docs/]`**.
-
----
-
-## 🤝 Contribuição (Opcional)
-
-Sinta-se à vontade para contribuir! Se tiver sugestões ou quiser reportar bugs:
-
-1.  Faça um **fork** do projeto.
-2.  Crie uma nova **branch** (`git checkout -b feature/minha-feature`).
-3.  Faça suas **alterações** e commite (`git commit -m 'feat: Adiciona nova funcionalidade X'`).
-4.  Faça **push** para a branch (`git push origin feature/minha-feature`).
-5.  Abra um **Pull Request (PR)**.
-
----
-
-## 👨‍💻 Autor
-
-| [<img src="[URL_SUA_FOTO]" width="100px;"/>](https://github.com/[SEU_GITHUB]) |
-| :---: |
-| **[Seu Nome Completo]** |
-| [Seu LinkedIn ou Outro Contato] |
-
----
-
-## ⚖️ Licença
-
-Este projeto está sob a licença **[Nome da Licença, ex: MIT License]** - veja o arquivo `LICENSE.md` para mais detalhes.
+| **Bernardo dos Santos Gomes** |
