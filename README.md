@@ -45,8 +45,8 @@ O sistema SGEA oferece as seguintes funcionalidades principais:
 
 Você precisará ter instalado em sua máquina:
 
-* **Python 3.13.7
-* **pip django**
+* **Python 3.13.7**
+* **Pip django**
 
 ---
 
