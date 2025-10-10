@@ -41,11 +41,7 @@ O sistema SGEA oferece as seguintes funcionalidades principais:
 
 ---
 
-## 🚀 Como Executar o Projeto
-
-Para ter uma cópia local do projeto rodando para desenvolvimento e testes
-
-### 📋 Pré-requisitos
+## 📋 Pré-requisitos
 
 Você precisará ter instalado em sua máquina:
 
