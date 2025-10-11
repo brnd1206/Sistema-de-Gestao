@@ -100,3 +100,4 @@ Sinta-se à vontade para contribuir! Se tiver sugestões ou quiser reportar bugs
 | https://www.linkedin.com/in/bernardo-de-carvalho-leite-4a509a323/ |
 
 | **Bernardo dos Santos Gomes** |
+| https://github.com/bernardosgomes |
