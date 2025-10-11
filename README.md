@@ -1,6 +1,6 @@
 # 💻 Sistema de Gestão de Eventos Acadêmicos (SGEA)
 
-![Status do Projeto](https://img.shields.io/badge/STATUS-CONCLUÍDO-GREEN?style=for-the-badge) ![Python](https://img.shields.io/badge/PYTHON-3.13.7?style=for-the-badge)
+![Status do Projeto](https://img.shields.io/badge/STATUS-CONCLUÍDO-GREEN?style=for-the-badge) ![Python](https://img.shields.io/badge/PYTHON-3.13.7-BLUE?style=for-the-badge)
 
 ---
 
