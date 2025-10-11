@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do Participante - SGEA</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f9fa; color: #333; line-height: 1.6; margin: 0; padding: 20px; }
+        .container { max-width: 960px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #007bff; padding-bottom: 15px; margin-bottom: 25px; }
+        .header h1 { margin: 0; }
+        .header .logout-form button { background-color: #d9534f; color: white; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        h2 { color: #007bff; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 40px; }
+        .event-list { list-style: none; padding: 0; }
+        .event-item { background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .event-details h3 { margin-top: 0; color: #555; }
+        .event-details p { margin: 5px 0; font-size: 0.9em; }
+        .event-actions .btn { border: none; padding: 10px 15px; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .btn-success { background-color: #28a745; }
+        .btn-danger { background-color: #d9534f; }
+        .no-events, .no-certificates { color: #777; font-style: italic; }
+        .messages { list-style: none; padding: 0; margin-bottom: 20px; }
+        .messages li { padding: 15px; margin-bottom: 10px; border-radius: 4px; }
+        .messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .messages .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .messages .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+
+        /* Estilos para a tabela de certificados */
+        .table { width: 100%; border-collapse: collapse; margin-top: 15px;}
+        .table th, .table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        .table th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Olá, {{ user.first_name|default:user.username }}!</h1>
+            <form action="{% url 'logout' %}" method="post" class="logout-form">
+                {% csrf_token %}
+                <button type="submit">Sair</button>
+            </form>
+        </div>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <h2>Meus Eventos Inscritos</h2>
+        {% if eventos_inscritos %}
+            <ul class="event-list">
+                {% for evento in eventos_inscritos %}
+                    <li class="event-item">
+                        <div class="event-details">
+                            <h3>{{ evento.nome }}</h3>
+                            <p><strong>Local:</strong> {{ evento.local }} | <strong>Início:</strong> {{ evento.data_inicio|date:"d/m/Y, H:i" }}</p>
+                        </div>
+                        <div class="event-actions">
+                            <form action="{% url 'cancelar_inscricao' evento.pk %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Cancelar Inscrição</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-events">Você ainda não se inscreveu em nenhum evento.</p>
+        {% endif %}
+
+        <h2>Eventos Disponíveis</h2>
+        {% if eventos_disponiveis %}
+            <ul class="event-list">
+                {% for evento in eventos_disponiveis %}
+                    <li class="event-item">
+                        <div class="event-details">
+                            <h3>{{ evento.nome }}</h3>
+                            <p><strong>Local:</strong> {{ evento.local }} | <strong>Início:</strong> {{ evento.data_inicio|date:"d/m/Y, H:i" }}</p>
+                        </div>
+                        <div class="event-actions">
+                            <form action="{% url 'inscrever_evento' evento.pk %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">Inscrever-se</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-events">Não há eventos disponíveis no momento.</p>
+        {% endif %}
+        
+        <h2>Meus Certificados</h2>
+        {% if certificados_obtidos %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Data de Emissão</th>
+                        <th>Código de Validação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for certificado in certificados_obtidos %}
+                    <tr>
+                        <td>{{ certificado.inscricao.evento.nome }}</td>
+                        <td>{{ certificado.data_emissao|date:"d/m/Y" }}</td>
+                        <td><strong>{{ certificado.codigo_validacao }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-certificates">Você ainda não possui nenhum certificado.</p>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

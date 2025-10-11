@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Exclusão</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; }
+        h1 { color: #d9534f; }
+        .btn { padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; margin: 0 10px; }
+        .btn-danger { background-color: #d9534f; color: white; border: none; cursor: pointer; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Atenção!</h1>
+        <p>Você tem certeza que deseja deletar o evento "<strong>{{ evento.nome }}</strong>"?</p>
+        <p>Esta ação não pode ser desfeita.</p>
+        <br>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sim, deletar</button>
+            <a href="{% url 'organizador_dashboard' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>

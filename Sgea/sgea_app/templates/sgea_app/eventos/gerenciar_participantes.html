@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Participantes</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #007bff; }
+        h2 { border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .table th, .table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        .table th { background-color: #f2f2f2; }
+        .btn { border: none; padding: 8px 12px; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .btn-success { background-color: #28a745; }
+        .status-emitted { color: #28a745; font-weight: bold; }
+        .back-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
+        .messages { list-style: none; padding: 0; margin-bottom: 20px; }
+        .messages li { padding: 15px; margin-bottom: 10px; border-radius: 4px; }
+        .messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .messages .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciar Participantes</h1>
+        <h2>Evento: {{ evento.nome }}</h2>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if inscricoes %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Participante</th>
+                        <th>Data da Inscrição</th>
+                        <th>Status do Certificado</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inscricao in inscricoes %}
+                    <tr>
+                        <td>{{ inscricao.usuario.first_name }} ({{ inscricao.usuario.username }})</td>
+                        <td>{{ inscricao.data_inscricao|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if inscricao.certificado %}
+                                <span class="status-emitted">Emitido</span>
+                            {% else %}
+                                <span>Pendente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if inscricao.certificado %}
+                                Cód: {{ inscricao.certificado.codigo_validacao }}
+                            {% else %}
+                                <form action="{% url 'emitir_certificado' inscricao.pk %}" method="post" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success">Emitir Certificado</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Nenhum participante inscrito neste evento ainda.</p>
+        {% endif %}
+
+        <a href="{% url 'organizador_dashboard' %}" class="back-link">&larr; Voltar para o Dashboard</a>
+    </div>
+</body>
+</html>
