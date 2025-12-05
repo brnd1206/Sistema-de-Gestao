@@ -33,6 +33,13 @@ class UsuarioCreationForm(UserCreationForm):
         if perfil in ['aluno', 'professor'] and not instituicao_ensino:
             self.add_error('instituicao_ensino', "Instituição de ensino é obrigatória para alunos e professores.")
 
+    def clean_email(self):
+        # Validação para garantir que o email seja único no sistema
+        email = self.cleaned_data.get('email')
+        if email and Usuario.objects.filter(email=email).exists():
+            raise forms.ValidationError("Este endereço de email já está em uso por outro usuário.")
+        return email
+
     def clean_telefone(self):
         telefone = self.cleaned_data.get('telefone')
         # Validação simples de tamanho mínimo para evitar (__) ____-____ vazio ou incompleto

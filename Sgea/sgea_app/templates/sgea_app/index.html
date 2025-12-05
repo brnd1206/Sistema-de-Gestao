@@ -86,7 +86,7 @@
 
             <form method="post" action="{% url 'login' %}">
                 {% csrf_token %}
-                <input type="text" name="username" placeholder="Nome de usuário" required>
+                <input type="text" name="username" placeholder="Usuário ou Email" required>
                 <input type="password" name="password" placeholder="Senha" required>
                 <button type="submit">Entrar</button>
             </form>
