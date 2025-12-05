@@ -2,7 +2,9 @@
 
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from rest_framework.authtoken import views as token_views
 from . import views
+from . import api_views
 
 urlpatterns = [
     # Autenticação
@@ -26,4 +28,14 @@ urlpatterns = [
     # URLs para Certificados
     path('evento/<int:pk>/participantes/', views.gerenciar_participantes, name='gerenciar_participantes'),
     path('inscricao/<int:inscricao_pk>/emitir_certificado/', views.emitir_certificado, name='emitir_certificado'),
+
+    # Endpoint para obter o token (Login da API)
+    # Enviar POST com 'username' e 'password' para receber o 'token'
+    path('api/token-auth/', token_views.obtain_auth_token, name='api_token_auth'),
+
+    # Consulta de Eventos (GET) - Limitada a 20/dia
+    path('api/eventos/', api_views.EventoListAPIView.as_view(), name='api_eventos_list'),
+
+    # Inscrição (POST) - Limitada a 50/dia
+    path('api/inscrever/', api_views.InscricaoCreateAPIView.as_view(), name='api_inscrever'),
 ]
