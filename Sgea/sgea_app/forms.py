@@ -1,10 +1,13 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
+
 from .models import Evento, Usuario
 
 class UsuarioCreationForm(UserCreationForm):
     # Adicionando os campos extras que não estão no UserCreationForm padrão
     nome = forms.CharField(max_length=150, required=True, help_text="Nome é obrigatório.")
+    email = forms.EmailField(required=True, help_text="Informe um endereço de email válido.")
     telefone = forms.CharField(max_length=15, required=False, help_text="Ex: (11) 99999-9999")
     instituicao_ensino = forms.CharField(max_length=255, required=False, label="Instituição de Ensino")
 
@@ -12,7 +15,8 @@ class UsuarioCreationForm(UserCreationForm):
         model = Usuario
         # Define a ordem dos campos no formulário
         fields = (
-            'username', 
+            'username',
+            'email',
             'nome', 
             'perfil', 
             'telefone', 
@@ -28,6 +32,13 @@ class UsuarioCreationForm(UserCreationForm):
 
         if perfil in ['aluno', 'professor'] and not instituicao_ensino:
             self.add_error('instituicao_ensino', "Instituição de ensino é obrigatória para alunos e professores.")
+
+    def clean_telefone(self):
+        telefone = self.cleaned_data.get('telefone')
+        # Validação simples de tamanho mínimo para evitar (__) ____-____ vazio ou incompleto
+        if telefone and len(telefone) < 14:
+            raise ValidationError("Por favor, insira um número de telefone válido com DDD.")
+        return telefone
             
         return cleaned_data
 
@@ -45,7 +56,8 @@ class EventoForm(forms.ModelForm):
             'data_inicio', 
             'data_fim', 
             'local', 
-            'quantidade_participantes'
+            'quantidade_participantes',
+            'banner'
         ]
         # Widgets para facilitar a seleção de data e hora
         widgets = {
@@ -56,6 +68,21 @@ class EventoForm(forms.ModelForm):
                 attrs={'type': 'datetime-local', 'class': 'form-control'}
             ),
         }
+
+    def clean_quantidade_participantes(self):
+        qtd = self.cleaned_data.get('quantidade_participantes')
+        if qtd is not None and qtd < 0:
+            raise ValidationError("A quantidade de participantes não pode ser negativa.")
+        return qtd
+
+    def clean_banner(self):
+        banner = self.cleaned_data.get('banner')
+        if banner:
+            # Verifica o tamanho do arquivo (exemplo: máx 5MB)
+            if banner.size > 5 * 1024 * 1024:
+                raise ValidationError("O tamanho da imagem não deve exceder 5MB.")
+            # A validação se é imagem é feita automaticamente pelo ImageField do Django
+        return banner
 
     def __init__(self, *args, **kwargs):
         super(EventoForm, self).__init__(*args, **kwargs)

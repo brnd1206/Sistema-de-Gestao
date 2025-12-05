@@ -1,5 +1,5 @@
 # models.py
-
+from django.core.validators import MinValueValidator, FileExtensionValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
@@ -51,7 +51,17 @@ class Evento(models.Model):
     data_inicio = models.DateTimeField(help_text="Data e hora de início do evento.")
     data_fim = models.DateTimeField(help_text="Data e hora de término do evento.")
     local = models.CharField(max_length=255, help_text="Local onde o evento ocorrerá.")
-    quantidade_participantes = models.PositiveIntegerField(default=0, help_text="Número máximo de participantes permitidos.")
+    quantidade_participantes = models.PositiveIntegerField(
+        default=0,
+        validators=[MinValueValidator(0)],
+        help_text="Número máximo de participantes permitidos.")
+    banner = models.ImageField(
+        upload_to='eventos/banners/',
+        blank=True,
+        null=True,
+        help_text="Imagem promocional do evento (apenas .jpg, .png, .jpeg).",
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])]
+    )
     organizador = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.SET_NULL, 

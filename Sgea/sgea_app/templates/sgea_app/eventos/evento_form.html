@@ -14,6 +14,8 @@
         .btn-submit:hover { background-color: #218838; }
         .back-link { display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none; }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -25,5 +27,19 @@
         </form>
         <a href="{% url 'organizador_dashboard' %}" class="back-link">Voltar para o Dashboard</a>
     </div>
+    <script>
+        $(document).ready(function(){
+            // Configuração do Datepicker (Linguagem PT-BR e formato)
+            $.datetimepicker.setLocale('pt-BR');
+
+            $('.datetimepicker').datetimepicker({
+                format:'Y-m-d H:i', // Formato que o Django espera (AAAA-MM-DD HH:MM)
+                formatTime:'H:i',
+                formatDate:'Y-m-d',
+                step: 30, // Intervalo de minutos
+                minDate: 0 // Impede seleção de datas passadas (opcional)
+            });
+        });
+    </script>
 </body>
 </html>

@@ -89,6 +89,8 @@
             text-decoration: underline;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 </head>
 <body>
 
@@ -97,9 +99,7 @@
 
         <form method="post">
             {% csrf_token %}
-            
             {{ form.as_p }}
-
             <button type="submit">Cadastrar</button>
         </form>
 
@@ -107,6 +107,11 @@
             <p>Já tem uma conta? <a href="{% url 'login' %}">Faça o login</a></p>
         </div>
     </div>
-
+    <script>
+        $(document).ready(function(){
+            // Aplica a máscara no campo de telefone (id gerado pelo Django)
+            $('#id_telefone').mask('(00) 00000-0000');
+        });
+    </script>
 </body>
 </html>
