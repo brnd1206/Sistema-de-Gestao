@@ -20,6 +20,7 @@ urlpatterns = [
     path('evento/criar/', views.criar_evento, name='criar_evento'),
     path('evento/<int:pk>/atualizar/', views.atualizar_evento, name='atualizar_evento'),
     path('evento/<int:pk>/deletar/', views.deletar_evento, name='deletar_evento'),
+    path('evento/<int:pk>/', views.detalhes_evento, name='detalhes_evento'),
 
     # URLs para Inscrição e Cancelamento
     path('evento/<int:pk>/inscrever/', views.inscrever_evento, name='inscrever_evento'),

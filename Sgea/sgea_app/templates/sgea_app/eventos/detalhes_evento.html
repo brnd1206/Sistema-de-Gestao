@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ evento.nome }} - Detalhes</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden; }
+
+        /* Estilo do Banner */
+        .event-banner {
+            width: 100%;
+            height: 300px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .event-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+        }
+        .no-banner { color: #888; font-style: italic; }
+
+        .content { padding: 30px; }
+        h1 { margin-top: 0; color: #007bff; }
+        .info-group { margin-bottom: 20px; }
+        .info-label { font-weight: bold; color: #555; display: block; }
+        .btn { display: inline-block; padding: 10px 20px; border-radius: 5px; text-decoration: none; color: white; font-weight: bold; margin-top: 10px; cursor: pointer; border: none; }
+        .btn-success { background-color: #28a745; }
+        .btn-danger { background-color: #d9534f; }
+        .btn-secondary { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="event-banner">
+        {% if evento.banner %}
+            <img src="{{ evento.banner.url }}" alt="Banner do evento {{ evento.nome }}">
+        {% else %}
+            <div class="no-banner">Sem banner disponível</div>
+        {% endif %}
+    </div>
+
+    <div class="content">
+        <h1>{{ evento.nome }}</h1>
+
+        <div class="info-group">
+            <span class="info-label">Tipo:</span> {{ evento.get_tipo_evento_display }}
+        </div>
+
+        <div class="info-group">
+            <span class="info-label">Data de Início:</span> {{ evento.data_inicio|date:"d/m/Y às H:i" }}
+        </div>
+
+        <div class="info-group">
+            <span class="info-label">Local:</span> {{ evento.local }}
+        </div>
+
+        <div class="info-group">
+            <span class="info-label">Vagas:</span>
+            {{ evento.participantes.count }} / {{ evento.quantidade_participantes }}
+        </div>
+
+        <hr>
+
+        {% if user.is_authenticated %}
+            {% if inscrito %}
+                <form action="{% url 'cancelar_inscricao' evento.pk %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Cancelar Inscrição</button>
+                </form>
+            {% else %}
+                <form action="{% url 'inscrever_evento' evento.pk %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Inscrever-se</button>
+                </form>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-secondary">Faça login para se inscrever</a>
+        {% endif %}
+
+        <a href="{% url 'participantes_dashboard' %}" class="btn btn-secondary" style="float: right;">Voltar</a>
+    </div>
+</div>
+
+</body>
+</html>

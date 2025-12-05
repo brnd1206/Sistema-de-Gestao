@@ -69,9 +69,11 @@ class EventoForm(forms.ModelForm):
         # Widgets para facilitar a seleção de data e hora
         widgets = {
             'data_inicio': forms.DateTimeInput(
+                format='%Y-%m-%dT%H:%M',
                 attrs={'type': 'datetime-local', 'class': 'form-control'}
             ),
             'data_fim': forms.DateTimeInput(
+                format='%Y-%m-%dT%H:%M',
                 attrs={'type': 'datetime-local', 'class': 'form-control'}
             ),
         }

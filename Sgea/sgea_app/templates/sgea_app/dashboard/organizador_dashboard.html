@@ -41,6 +41,7 @@
                     <tr>
                         <th>Nome do Evento</th>
                         <th>Data de Início</th>
+                        <th>Data de Término</th>
                         <th>Inscritos</th>
                         <th>Ações</th>
                     </tr>
@@ -50,6 +51,7 @@
                     <tr>
                         <td>{{ evento.nome }}</td>
                         <td>{{ evento.data_inicio|date:"d/m/Y H:i" }}</td>
+                        <td>{{ evento.data_fim|date:"d/m/Y H:i" }}</td>
                         <td>{{ evento.participantes.count }} / {{ evento.quantidade_participantes }}</td>
                         <td class="actions">
                             <a href="{% url 'atualizar_evento' evento.pk %}">Editar</a>

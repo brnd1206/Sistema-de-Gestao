@@ -160,6 +160,20 @@ def deletar_evento(request, pk):
 
     return render(request, 'sgea_app/eventos/evento_confirm_delete.html', {'evento': evento})
 
+def detalhes_evento(request, pk):
+    # Busca o evento ou retorna erro 404 se não existir
+    evento = get_object_or_404(Evento, pk=pk)
+
+    # Verifica se o usuário já está inscrito neste evento (para exibir botão correto)
+    inscrito = False
+    if request.user.is_authenticated:
+        inscrito = Inscricao.objects.filter(usuario=request.user, evento=evento).exists()
+
+    context = {
+        'evento': evento,
+        'inscrito': inscrito
+    }
+    return render(request, 'sgea_app/eventos/detalhes_evento.html', context)
 
 # --- Gerenciamento de Certificados ---
 
