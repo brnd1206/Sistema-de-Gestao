@@ -389,7 +389,7 @@ def organizador_cadastrar_participante(request):
     # Reutiliza o template de cadastro, mas passa um título diferente
     return render(request, 'sgea_app/usuarios/cadastro.html', {
         'form': form,
-        'titulo': 'Novo Participante (Admin)'
+        'titulo': 'Novo Participante'
     })
 
 

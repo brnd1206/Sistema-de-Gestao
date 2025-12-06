@@ -32,6 +32,12 @@
                         </a>
                     {% endif %}
 
+                    {% if user.is_superuser %}
+                        <a href="{% url 'admin:index' %}" class="btn" style="background-color: #333; color: white; padding: 5px 10px; font-size: 0.8rem; margin-right: 5px;" target="_blank" title="Área Administrativa do Django">
+                            <i class="fas fa-cogs"></i> Admin
+                        </a>
+                    {% endif %}
+
                     <form action="{% url 'logout' %}" method="post" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger" style="padding: 5px 15px; font-size: 0.9rem;">Sair</button>
@@ -64,6 +70,9 @@
     <footer class="main-footer">
         <p>&copy; 2025 UniEvents. Potencializando a Gestão Acadêmica.</p>
     </footer>
+
+    {% block scripts %}
+    {% endblock %}
 
 </body>
 </html>
