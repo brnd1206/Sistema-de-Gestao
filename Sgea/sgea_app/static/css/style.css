@@ -1,0 +1,157 @@
+/* sgea_app/static/css/style.css */
+
+:root {
+    /* Cores extraídas da Logo UniEvents */
+    --primary-color: #0a2342;   /* Azul Marinho Profundo */
+    --secondary-color: #c59d5f; /* Dourado/Mostarda */
+    --accent-color: #1a3c6e;    /* Azul um pouco mais claro para hover */
+
+    /* Cores Funcionais */
+    --text-color: #2c3e50;
+    --bg-color: #f4f6f8;
+    --white: #ffffff;
+    --danger: #d9534f;
+    --success: #27ae60;
+
+    /* Tipografia */
+    --font-main: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+}
+
+/* --- Reset e Base --- */
+* { box-sizing: border-box; }
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Acessibilidade: Foco visível */
+a:focus, button:focus, input:focus {
+    outline: 3px solid var(--secondary-color);
+    outline-offset: 2px;
+}
+
+/* --- Cabeçalho (Header) --- */
+.main-header {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 0.8rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-bottom: 4px solid var(--secondary-color); /* Detalhe Dourado */
+}
+
+/* Logo no Header */
+.brand-wrapper {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--white);
+    gap: 12px;
+}
+
+.logo-img {
+    height: 50px; /* Ajuste conforme necessário */
+    width: auto;
+    border-radius: 4px;
+    background-color: var(--white); /* Fundo branco para a logo transparente brilhar ou box quadrado */
+    padding: 2px;
+}
+
+.brand-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: var(--secondary-color); /* Dourado no texto do nome */
+}
+
+/* --- Layout e Cards --- */
+.container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 20px;
+    flex: 1;
+}
+
+.card {
+    background: var(--white);
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+    border-top: 3px solid var(--primary-color); /* Identidade visual no topo dos cards */
+}
+
+h1, h2, h3 { color: var(--primary-color); margin-top: 0; }
+h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+
+/* --- Botões --- */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+/* Botão Primário (Azul) */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color); /* Efeito de inversão no hover */
+}
+
+/* Botão Secundário (Dourado) */
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+.btn-secondary:hover { opacity: 0.9; }
+
+.btn-danger { background-color: var(--danger); color: white; }
+.btn-success { background-color: var(--success); color: white; }
+
+/* --- Tabelas --- */
+.table-responsive { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+th { background-color: var(--primary-color); color: var(--secondary-color); padding: 12px; text-align: left; }
+td { padding: 12px; border-bottom: 1px solid #ddd; }
+tr:hover { background-color: #f1f1f1; }
+
+/* --- Footer --- */
+.main-footer {
+    background-color: var(--primary-color);
+    color: #ccc;
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+    font-size: 0.9rem;
+    border-top: 4px solid var(--secondary-color);
+}
+
+/* --- Formulários --- */
+.form-group { margin-bottom: 15px; }
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+input:focus { border-color: var(--primary-color); }
