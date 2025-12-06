@@ -28,7 +28,7 @@ urlpatterns = [
 
     # URLs para Certificados
     path('evento/<int:pk>/participantes/', views.gerenciar_participantes, name='gerenciar_participantes'),
-    path('inscricao/<int:inscricao_pk>/emitir_certificado/', views.emitir_certificado, name='emitir_certificado'),
+    path('inscricao/<int:inscricao_pk>/presenca/', views.marcar_presenca, name='marcar_presenca'),
 
     # Endpoint para obter o token (Login da API)
     # Enviar POST com 'username' e 'password' para receber o 'token'

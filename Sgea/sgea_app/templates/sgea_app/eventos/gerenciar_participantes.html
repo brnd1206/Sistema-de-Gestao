@@ -5,26 +5,41 @@
     <title>Gerenciar Participantes</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .container { max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         h1 { color: #007bff; }
-        h2 { border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        h2 { border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 20px; }
+
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        .table { width: 100%; border-collapse: collapse; }
         .table th, .table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
         .table th { background-color: #f2f2f2; }
-        .btn { border: none; padding: 8px 12px; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; text-decoration: none; }
+
+        .btn { border: none; padding: 8px 12px; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 14px; display: inline-block;}
+        .btn-primary { background-color: #007bff; }
         .btn-success { background-color: #28a745; }
+        .btn-warning { background-color: #ffc107; color: #333; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-danger { background-color: #dc3545; }
+
         .status-emitted { color: #28a745; font-weight: bold; }
         .back-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
+
         .messages { list-style: none; padding: 0; margin-bottom: 20px; }
         .messages li { padding: 15px; margin-bottom: 10px; border-radius: 4px; }
         .messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .messages .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .messages .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Gerenciar Participantes</h1>
-        <h2>Evento: {{ evento.nome }}</h2>
+
+        <div class="header-actions">
+            <h2>Evento: {{ evento.nome }}</h2>
+
+        </div>
 
         {% if messages %}
             <ul class="messages">
@@ -39,9 +54,9 @@
                 <thead>
                     <tr>
                         <th>Participante</th>
-                        <th>Data da Inscrição</th>
-                        <th>Status do Certificado</th>
-                        <th>Ação</th>
+                        <th>Data Inscrição</th>
+                        <th style="text-align: center;">Presença</th>
+                        <th>Status Certificado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,21 +64,27 @@
                     <tr>
                         <td>{{ inscricao.usuario.first_name }} ({{ inscricao.usuario.username }})</td>
                         <td>{{ inscricao.data_inscricao|date:"d/m/Y" }}</td>
+
+                        <td style="text-align: center;">
+                            {% if inscricao.certificado %}
+                                <span class="status-emitted">Confirmada</span>
+                            {% else %}
+                                <a href="{% url 'marcar_presenca' inscricao.pk %}" class="btn {% if inscricao.presenca %}btn-success{% else %}btn-secondary{% endif %}">
+                                    {% if inscricao.presenca %}Confirmada{% else %}Ausente{% endif %}
+                                </a>
+                            {% endif %}
+                        </td>
+
                         <td>
                             {% if inscricao.certificado %}
                                 <span class="status-emitted">Emitido</span>
+                                <small>(Cód: {{ inscricao.certificado.codigo_validacao }})</small>
                             {% else %}
-                                <span>Pendente</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if inscricao.certificado %}
-                                Cód: {{ inscricao.certificado.codigo_validacao }}
-                            {% else %}
-                                <form action="{% url 'emitir_certificado' inscricao.pk %}" method="post" style="margin: 0;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-success">Emitir Certificado</button>
-                                </form>
+                                {% if inscricao.presenca %}
+                                    <span style="color: #ffc107; font-weight:bold;">Aguardando Geração</span>
+                                {% else %}
+                                    <span style="color: #999;">Pendente Presença</span>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>

@@ -93,6 +93,33 @@
             </ul>
         {% endif %}
 
+        {% if user.perfil == 'professor' %}
+            <h2>Eventos sob Minha Responsabilidade</h2>
+            {% if eventos_responsavel %}
+                <ul class="event-list">
+                    {% for evento in eventos_responsavel %}
+                        <li class="event-item">
+                            <div class="event-details">
+                                <h3>
+                                    <a href="{% url 'detalhes_evento' evento.pk %}" style="text-decoration: none; color: #007bff;">
+                                        {{ evento.nome }}
+                                    </a>
+                                </h3>
+                                <p><strong>Local:</strong> {{ evento.local }}</p>
+                                <p><strong>Início:</strong> {{ evento.data_inicio|date:"d/m/Y, H:i" }} | <strong>Término:</strong> {{ evento.data_fim|date:"d/m/Y, H:i" }}</p>
+                                <p><strong>Inscritos:</strong> {{ evento.participantes.count }} / {{ evento.quantidade_participantes }}</p>
+                            </div>
+                            <div class="event-actions">
+                                <a href="{% url 'detalhes_evento' evento.pk %}" class="btn btn-primary">Detalhes</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-events">Você não é responsável por nenhum evento no momento.</p>
+            {% endif %}
+        {% endif %}
+
         <h2>Meus Eventos Inscritos</h2>
         {% if eventos_inscritos %}
             <ul class="event-list">

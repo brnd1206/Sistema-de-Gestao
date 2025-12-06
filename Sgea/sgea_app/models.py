@@ -120,6 +120,7 @@ class Inscricao(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="inscricoes")
     evento = models.ForeignKey(Evento, on_delete=models.CASCADE, related_name="inscricoes")
     data_inscricao = models.DateTimeField(auto_now_add=True)
+    presenca = models.BooleanField(default=False, help_text="Indica se o participante esteve presente no evento.")
 
     class Meta:
         db_table = "inscricao"
