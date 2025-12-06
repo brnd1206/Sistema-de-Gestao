@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Evento, Inscricao
 from .serializers import EventoSerializer, InscricaoSerializer
+from .views import registrar_log
 
 
 # 3.1. Consulta de Eventos
@@ -46,3 +47,14 @@ class InscricaoCreateAPIView(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EventoListAPIView(generics.ListAPIView):
+    queryset = Evento.objects.all()
+    serializer_class = EventoSerializer
+    permission_classes = [IsAuthenticated]
+    throttle_scope = 'consulta_eventos'
+
+    def get(self, request, *args, **kwargs):
+        # LOG: Consulta via API
+        registrar_log(request, 'evento_consulta_api', "Listagem de eventos via API")
+        return super().get(request, *args, **kwargs)

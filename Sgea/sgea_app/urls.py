@@ -12,7 +12,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('cadastro/', views.cadastro, name='cadastro'),
 
-    # URL de Ativação por E-mail (Sua funcionalidade)
+    # URL de Ativação por E-mail
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 
     # --- Dashboards ---
@@ -38,9 +38,6 @@ urlpatterns = [
     
     # Rota nova do seu amigo (Marcar Presença)
     path('inscricao/<int:inscricao_pk>/presenca/', views.marcar_presenca, name='marcar_presenca'),
-    
-    # Rota mantida (Emitir Certificado individualmente)
-    path('inscricao/<int:inscricao_pk>/emitir_certificado/', views.emitir_certificado, name='emitir_certificado'),
 
     # --- API Endpoints ---
     # Endpoint para obter o token (Login da API)

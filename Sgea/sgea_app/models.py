@@ -149,31 +149,30 @@ class Certificado(models.Model):
 
 class LogAuditoria(models.Model):
     ACAO_CHOICES = (
-        ('cadastro_usuario', 'Cadastro de Usuário'),
-        ('criacao_evento', 'Criação de Evento'),
-        ('edicao_evento', 'Edição de Evento'),
-        ('exclusao_evento', 'Exclusão de Evento'),
+        ('criacao_usuario', 'Criação de Usuário'),
+        ('login', 'Login no Sistema'),
+        ('evento_cadastro', 'Cadastro de Evento'),
+        ('evento_edicao', 'Alteração de Evento'),
+        ('evento_exclusao', 'Exclusão de Evento'),
+        ('evento_consulta_api', 'Consulta API Eventos'),
         ('inscricao', 'Inscrição em Evento'),
-        ('cancelamento', 'Cancelamento de Inscrição'),
-        ('presenca', 'Marcação de Presença'),
-        ('certificado', 'Geração de Certificado'),
-        ('login', 'Login'),
+        ('certificado_geracao', 'Geração de Certificado'),
+        ('certificado_consulta', 'Consulta de Certificado'),
     )
 
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='logs_acoes',
-        help_text="Usuário que realizou a ação."
+        related_name='logs',
+        help_text="Usuário que realizou a ação (pode ser null se for anônimo/sistema)."
     )
     acao = models.CharField(max_length=50, choices=ACAO_CHOICES)
-    detalhes = models.TextField(blank=True, null=True, help_text="Descrição detalhada da ação (ex: nome do evento, usuário afetado).")
+    detalhes = models.TextField(blank=True, null=True)
     data_hora = models.DateTimeField(auto_now_add=True)
     ip_usuario = models.GenericIPAddressField(blank=True, null=True)
 
     class Meta:
-        db_table = "log_auditoria"
         ordering = ['-data_hora']
         verbose_name = "Log de Auditoria"
         verbose_name_plural = "Logs de Auditoria"
