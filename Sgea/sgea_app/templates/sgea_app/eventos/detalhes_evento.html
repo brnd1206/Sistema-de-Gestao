@@ -73,15 +73,25 @@
                         <span style="color: var(--success); font-weight: bold; margin-right: 15px;">
                             <i class="fas fa-check-circle"></i> Você está inscrito!
                         </span>
-                        <form action="{% url 'cancelar_inscricao' evento.pk %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-times"></i> Cancelar Inscrição
-                            </button>
-                        </form>
+
+                        {% if evento.data_fim > now %}
+                            <form action="{% url 'cancelar_inscricao' evento.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-times"></i> Cancelar Inscrição
+                                </button>
+                            </form>
+                        {% endif %}
                     </div>
                 {% else %}
-                    {% if evento.participantes.count < evento.quantidade_participantes %}
+
+                    {% now "Y-m-d H:i" as current_time %}
+                    {% if evento.data_fim|date:"Y-m-d H:i" < current_time %}
+                        <button class="btn btn-secondary" disabled style="opacity: 0.7; cursor: not-allowed; background-color: #95a5a6;">
+                            <i class="fas fa-clock"></i> Inscrições Encerradas
+                        </button>
+
+                    {% elif evento.participantes.count < evento.quantidade_participantes %}
                         <form action="{% url 'inscrever_evento' evento.pk %}" method="post">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-success" style="font-size: 1.1rem; padding: 12px 30px;">
@@ -93,6 +103,7 @@
                             Vagas Esgotadas
                         </button>
                     {% endif %}
+
                 {% endif %}
             {% else %}
                 <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">

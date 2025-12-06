@@ -106,6 +106,10 @@ class Evento(models.Model):
         self.full_clean()  # Chama o clean() antes de salvar
         super().save(*args, **kwargs)
 
+    @property
+    def expirado(self):
+        return timezone.now() > self.data_fim
+
     def __str__(self):
         return f"{self.nome} - {self.data_inicio.strftime('%d/%m/%Y')}"
 

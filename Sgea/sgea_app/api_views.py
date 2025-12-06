@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Evento, Inscricao
 from .serializers import EventoSerializer, InscricaoSerializer
 from .views import registrar_log
+from django.utils import timezone
 
 
 # 3.1. Consulta de Eventos
@@ -18,12 +19,8 @@ class EventoListAPIView(generics.ListAPIView):
     # Define o escopo para limitar a 20 requisições/dia (configurado no settings)
     throttle_scope = 'consulta_eventos'
 
-
-# 3.2. Inscrição de Participantes
 class InscricaoCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
-    # Define o escopo para limitar a 50 requisições/dia
     throttle_scope = 'inscricao_participante'
 
     def post(self, request):
@@ -32,14 +29,21 @@ class InscricaoCreateAPIView(APIView):
             evento = serializer.validated_data['evento']
             usuario = request.user
 
-            # Verifica se já está inscrito (regra de negócio)
+            # --- Validação de Data ---
+            if evento.data_fim < timezone.now():
+                return Response(
+                    {"detail": "As inscrições para este evento estão encerradas."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Verifica se já está inscrito
             if Inscricao.objects.filter(usuario=usuario, evento=evento).exists():
                 return Response(
                     {"detail": "Você já está inscrito neste evento."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Cria a inscrição vinculando ao usuário logado
+            # Cria a inscrição
             Inscricao.objects.create(usuario=usuario, evento=evento)
             return Response(
                 {"detail": f"Inscrição realizada com sucesso no evento {evento.nome}!"},

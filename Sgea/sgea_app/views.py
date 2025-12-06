@@ -164,7 +164,11 @@ def participantes_dashboard(request):
 
     # 2. Listas de Eventos
     eventos_inscritos = Evento.objects.filter(participantes=request.user)
-    eventos_disponiveis = Evento.objects.exclude(participantes=request.user)
+    eventos_disponiveis = Evento.objects.exclude(
+        participantes=request.user
+    ).filter(
+        data_fim__gte=timezone.now()
+    )
 
     # 3. Lista de Responsabilidade do Professor
     eventos_responsavel = []
@@ -273,6 +277,11 @@ def inscrever_evento(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
 
     if request.method == 'POST':
+        # Impede inscrição se o evento já terminou
+        if evento.data_fim < timezone.now():
+            messages.error(request, f"As inscrições para '{evento.nome}' estão encerradas (o evento já terminou).")
+            return redirect('participantes_dashboard')
+
         # Regra: Limite de Vagas
         if evento.participantes.count() >= evento.quantidade_participantes:
             messages.error(request, f"Desculpe, as vagas para o evento '{evento.nome}' estão esgotadas.")
