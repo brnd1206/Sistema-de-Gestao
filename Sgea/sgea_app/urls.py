@@ -19,6 +19,10 @@ urlpatterns = [
     path('dashboard/participante/', views.participantes_dashboard, name='participantes_dashboard'),
     path('dashboard/organizador/', views.organizador_dashboard, name='organizador_dashboard'),
 
+    # --- Log Organizador ---
+    path('organizador/novo-participante/', views.organizador_cadastrar_participante, name='organizador_cadastrar_participante'),
+    path('organizador/auditoria/', views.logs_auditoria, name='logs_auditoria'),
+
     # --- CRUD de Eventos ---
     path('evento/criar/', views.criar_evento, name='criar_evento'),
     path('evento/<int:pk>/atualizar/', views.atualizar_evento, name='atualizar_evento'),

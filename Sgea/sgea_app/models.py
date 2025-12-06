@@ -32,7 +32,6 @@ class Usuario(AbstractUser):
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.username})"
 
-
 # --- Modelos de Evento ---
 
 class Evento(models.Model):
@@ -147,3 +146,37 @@ class Certificado(models.Model):
 
     def __str__(self):
         return f"Certificado para {self.inscricao.usuario.username} no evento {self.inscricao.evento.nome}"
+
+class LogAuditoria(models.Model):
+    ACAO_CHOICES = (
+        ('cadastro_usuario', 'Cadastro de Usuário'),
+        ('criacao_evento', 'Criação de Evento'),
+        ('edicao_evento', 'Edição de Evento'),
+        ('exclusao_evento', 'Exclusão de Evento'),
+        ('inscricao', 'Inscrição em Evento'),
+        ('cancelamento', 'Cancelamento de Inscrição'),
+        ('presenca', 'Marcação de Presença'),
+        ('certificado', 'Geração de Certificado'),
+        ('login', 'Login'),
+    )
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='logs_acoes',
+        help_text="Usuário que realizou a ação."
+    )
+    acao = models.CharField(max_length=50, choices=ACAO_CHOICES)
+    detalhes = models.TextField(blank=True, null=True, help_text="Descrição detalhada da ação (ex: nome do evento, usuário afetado).")
+    data_hora = models.DateTimeField(auto_now_add=True)
+    ip_usuario = models.GenericIPAddressField(blank=True, null=True)
+
+    class Meta:
+        db_table = "log_auditoria"
+        ordering = ['-data_hora']
+        verbose_name = "Log de Auditoria"
+        verbose_name_plural = "Logs de Auditoria"
+
+    def __str__(self):
+        return f"[{self.data_hora}] {self.usuario} - {self.get_acao_display()}"

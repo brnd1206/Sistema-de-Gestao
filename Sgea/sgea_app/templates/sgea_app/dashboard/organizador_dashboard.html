@@ -33,7 +33,11 @@
             </form>
         </div>
 
-        <a href="{% url 'criar_evento' %}" class="btn-primary">Criar Novo Evento</a>
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'criar_evento' %}" class="btn-primary">Criar Novo Evento</a>
+            <a href="{% url 'organizador_cadastrar_participante' %}" class="btn-primary" style="background-color: #17a2b8;">Cadastrar Participante</a>
+            <a href="{% url 'logs_auditoria' %}" class="btn-primary" style="background-color: #343a40;">Logs de Auditoria</a>
+        </div>
 
         {% if eventos %}
             <table class="table">

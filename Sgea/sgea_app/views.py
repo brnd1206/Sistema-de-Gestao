@@ -6,7 +6,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from django.db.models import Q
 import uuid
 
 # --- Imports para E-mail e Ativação (Vindos do seu Stash) ---
@@ -18,7 +17,7 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpResponse
 
-from .models import Evento, Inscricao, Usuario, Certificado
+from .models import Evento, Inscricao, Certificado, LogAuditoria
 from .forms import UsuarioCreationForm, EventoForm
 
 # --- Autenticação (Com sua lógica de E-mail) ---
@@ -38,6 +37,7 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                registrar_log(request, 'login', "Usuário realizou login.")
                 if user.perfil == 'organizador':
                     return redirect('organizador_dashboard')
                 else:
@@ -216,6 +216,7 @@ def criar_evento(request):
             evento = form.save(commit=False)
             evento.organizador = request.user
             evento.save()
+            registrar_log(request, 'criacao_evento', f"Criou o evento '{evento.nome}'")
             return redirect('organizador_dashboard')
     else:
         form = EventoForm()
@@ -249,6 +250,7 @@ def deletar_evento(request, pk):
         
     if request.method == 'POST':
         evento.delete()
+        registrar_log(request, 'exclusao_evento', f"Deletou o evento ID {pk}")
         return redirect('organizador_dashboard')
 
     return render(request, 'sgea_app/eventos/evento_confirm_delete.html', {'evento': evento})
@@ -264,6 +266,52 @@ def detalhes_evento(request, pk):
         'inscrito': inscrito
     }
     return render(request, 'sgea_app/eventos/detalhes_evento.html', context)
+
+def registrar_log(request, acao, detalhes=""):
+    """Salva um registro na tabela de auditoria"""
+    if request.user.is_authenticated:
+        LogAuditoria.objects.create(
+            usuario=request.user,
+            acao=acao,
+            detalhes=detalhes,
+            ip_usuario=request.META.get('REMOTE_ADDR')
+        )
+
+
+@login_required
+def organizador_cadastrar_participante(request):
+    """Permite ao organizador cadastrar novos usuários (Alunos/Professores)"""
+    if request.user.perfil != 'organizador':
+        return redirect('participantes_dashboard')
+
+    if request.method == 'POST':
+        form = UsuarioCreationForm(request.POST)
+        if form.is_valid():
+            novo_usuario = form.save()
+
+            # Log da ação
+            registrar_log(
+                request,
+                'cadastro_usuario',
+                f"Cadastrou o usuário {novo_usuario.username} ({novo_usuario.perfil})"
+            )
+
+            messages.success(request, f"Usuário {novo_usuario.username} cadastrado com sucesso!")
+            return redirect('organizador_dashboard')
+    else:
+        form = UsuarioCreationForm()
+
+    return render(request, 'sgea_app/usuarios/cadastro.html', {'form': form, 'titulo': 'Novo Participante'})
+
+
+@login_required
+def logs_auditoria(request):
+    """Exibe a lista de logs do sistema"""
+    if request.user.perfil != 'organizador':
+        return redirect('participantes_dashboard')
+
+    logs = LogAuditoria.objects.all()
+    return render(request, 'sgea_app/dashboard/logs_auditoria.html', {'logs': logs})
 
 # --- Gerenciamento de Certificados (Versão Melhorada do Upstream) ---
 
