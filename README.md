@@ -81,7 +81,8 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento e executar o
    
 ---
 
-🧪 Guia de Testes e Massa de Dados
+## 🧪 Guia de Testes e Massa de Dados
+
 Para testar as funcionalidades do sistema, recomenda-se popular o banco de dados com dados iniciais seguindo o roteiro abaixo.
 
 1. Criando um Superusuário (Organizador Principal)
