@@ -1,59 +1,73 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ titulo }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #333; }
-        form p { display: flex; flex-direction: column; margin-bottom: 15px; }
-        label { margin-bottom: 5px; font-weight: bold; }
-        .form-control { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
-        .btn-submit { background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
-        .btn-submit:hover { background-color: #218838; }
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none; }
+{% extends 'sgea_app/base.html' %}
+{% load static %}
 
-        /* OPCIONAL: Se quiser esconder a lista de erros de texto padrão do Django e deixar só o popup */
-        .errorlist { display: none; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>{{ titulo }}</h1>
+{% block title %}{{ titulo }} - Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 20px auto;">
+    <div class="card">
+        <h1 style="border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">
+            <i class="fas fa-calendar-plus"></i> {{ titulo }}
+        </h1>
+        
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn-submit">Salvar</button>
-        </form>
-        <a href="{% url 'organizador_dashboard' %}" class="back-link">Voltar para o Dashboard</a>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    {% if form.errors %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let mensagensErro = '';
-
-            // Loop para pegar erros de todos os campos (data_inicio, data_fim, etc)
-            {% for field, error_list in form.errors.items %}
-                {% for error in error_list %}
-                    mensagensErro += '{{ error|escapejs }}\n'; // Concatena os erros
-                {% endfor %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}<span style="color: var(--danger);">*</span>{% endif %}
+                    </label>
+                    
+                    {{ field }}
+                    
+                    {% if field.help_text %}
+                        <small style="color: #666; display: block; margin-top: 5px;">{{ field.help_text }}</small>
+                    {% endif %}
+                    
+                    {% if field.errors %}
+                        <div style="color: var(--danger); font-size: 0.9em; margin-top: 5px;">
+                            {{ field.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
             {% endfor %}
 
-            // Dispara o Popup Vermelho
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro de Validação',
-                text: mensagensErro,
-                confirmButtonColor: '#d9534f', // Vermelho para combinar com o tema
-                confirmButtonText: 'Corrigir'
-            });
-        });
-    </script>
-    {% endif %}
+            <div style="margin-top: 30px; display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-success" style="flex: 1;">
+                    <i class="fas fa-save"></i> Salvar Evento
+                </button>
+                <a href="{% url 'organizador_dashboard' %}" class="btn btn-secondary">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
 
-</body>
-</html>
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% if form.errors %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let mensagensErro = '';
+        {% for field, error_list in form.errors.items %}
+            {% for error in error_list %}
+                mensagensErro += '{{ error|escapejs }}\n';
+            {% endfor %}
+        {% endfor %}
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Atenção',
+            text: mensagensErro,
+            confirmButtonColor: '#d9534f',
+            confirmButtonText: 'Corrigir'
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}
