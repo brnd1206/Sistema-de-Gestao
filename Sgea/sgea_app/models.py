@@ -24,6 +24,9 @@ class Usuario(AbstractUser):
         verbose_name_plural = "Usuários"
 
     def save(self, *args, **kwargs):
+        # Se for superusuário, define automaticamente como 'organizador'
+        if self.is_superuser:
+            self.perfil = 'organizador'
         # Garante que instituição de ensino seja obrigatório para aluno e professor
         if self.perfil in ['aluno', 'professor'] and not self.instituicao_ensino:
             raise ValueError("Instituição de ensino é obrigatória para alunos e professores.")
