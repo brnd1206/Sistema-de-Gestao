@@ -85,64 +85,44 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento e executar o
 
 Para testar as funcionalidades do sistema, recomenda-se popular o banco de dados com dados iniciais seguindo o roteiro abaixo.
 
-1. Criando um Superusuário (Organizador Principal)
+1. **Criando um Superusuário (Organizador Principal)**
 Para acessar todas as funções administrativas e criar os primeiros eventos, é necessário um superusuário. No terminal, execute:
    ```bash
    python manage.py createsuperuser
 
 Siga as instruções para definir usuário, email e senha. Este usuário terá permissões de Organizador.
 
-2. Roteiro de Testes Funcionais
-Cenário A: Organizador (Gestão de Eventos)
+2. **Roteiro de Testes Funcionais**
 
+**Cenário A: Organizador (Gestão de Eventos)**
 Faça login com o superusuário criado (ou crie um novo usuário e defina o perfil como "Organizador").
-
 Acesse o Dashboard do Organizador.
-
 Clique em "Criar Novo Evento".
-
 Preencha o formulário:
-
 Teste o upload de uma imagem (Banner).
-
 Verifique a máscara de data/hora nos campos.
-
 Salve e verifique se o evento aparece na lista com as datas de início e fim corretas.
 
-Cenário B: Participante (Inscrição)
-
+**Cenário B: Participante (Inscrição)**
 Abra uma guia anônima ou faça logout.
-
 Acesse a página de Cadastro e crie uma conta com perfil "Aluno".
-
 No Dashboard do Participante, localize o evento criado no Cenário A.
-
 Clique no botão azul "Detalhes". Verifique se o banner é exibido corretamente.
-
 Clique em "Inscrever-se". O evento deve mover para a lista "Meus Eventos Inscritos".
 
-Cenário C: Teste da API REST Utilize o Postman ou Insomnia para testar os endpoints:
-
+**Cenário C: Teste da API REST**
 Obter Token (Login):
-
 POST /api/token-auth/
-
 Body: {"username": "seu_user", "password": "sua_senha"}
-
 Copie o "token" retornado.
 
 Listar Eventos:
-
 GET /api/eventos/
-
 Header: Authorization: Token SEU_TOKEN_COPIADO
 
 Inscrever-se via API:
-
 POST /api/inscrever/
-
 Header: Authorization: Token SEU_TOKEN_COPIADO
-
 Body: {"evento": 1}
 
 ---
