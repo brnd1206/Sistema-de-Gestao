@@ -1,37 +1,35 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Auditoria</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .filter-form { background: #eee; padding: 15px; border-radius: 5px; margin-bottom: 20px; display: flex; gap: 10px; align-items: flex-end; }
-        .form-group { display: flex; flex-direction: column; }
-        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 9px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
-        th { background-color: #343a40; color: white; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Registros de Auditoria</h1>
+{% extends 'sgea_app/base.html' %}
 
-        <form method="get" class="filter-form">
-            <div class="form-group">
-                <label>Data:</label>
-                <input type="date" name="data" value="{{ data_filtro|default:'' }}">
-            </div>
-            <div class="form-group">
-                <label>Usuário (Nome):</label>
-                <input type="text" name="usuario" placeholder="Ex: joao" value="{{ usuario_filtro|default:'' }}">
-            </div>
-            <button type="submit">Filtrar</button>
-            <a href="{% url 'logs_auditoria' %}" style="margin-left: 10px; padding: 9px;">Limpar</a>
-        </form>
+{% block title %}Auditoria - UniEvents{% endblock %}
 
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h1 style="margin: 0;"><i class="fas fa-file-signature"></i> Registros de Auditoria</h1>
+    </div>
+
+    <form method="get" style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e9ecef; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+        <div style="flex: 1; min-width: 200px;">
+            <label style="font-weight: bold; margin-bottom: 5px; display: block;">Data:</label>
+            <input type="date" name="data" value="{{ data_filtro|default:'' }}" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
+        </div>
+        
+        <div style="flex: 1; min-width: 200px;">
+            <label style="font-weight: bold; margin-bottom: 5px; display: block;">Usuário (Nome):</label>
+            <input type="text" name="usuario" placeholder="Ex: joao" value="{{ usuario_filtro|default:'' }}" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary" style="height: 42px;">
+                <i class="fas fa-filter"></i> Filtrar
+            </button>
+            <a href="{% url 'logs_auditoria' %}" class="btn btn-secondary" style="height: 42px; display: flex; align-items: center;">
+                Limpar
+            </a>
+        </div>
+    </form>
+
+    <div class="table-responsive">
         <table>
             <thead>
                 <tr>
@@ -45,19 +43,37 @@
             <tbody>
                 {% for log in logs %}
                 <tr>
-                    <td>{{ log.data_hora|date:"d/m/Y H:i:s" }}</td>
-                    <td>{{ log.usuario.username|default:"Anônimo" }}</td>
-                    <td>{{ log.get_acao_display }}</td>
-                    <td>{{ log.detalhes }}</td>
-                    <td>{{ log.ip_usuario }}</td>
+                    <td style="white-space: nowrap;">{{ log.data_hora|date:"d/m/Y H:i:s" }}</td>
+                    <td style="font-weight: bold;">
+                        {% if log.usuario %}
+                            {{ log.usuario.username }}
+                        {% else %}
+                            <span style="color: #999;">Anônimo/Sistema</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span style="background: #eef2f7; color: var(--primary-color); padding: 2px 6px; border-radius: 4px; font-size: 0.9rem;">
+                            {{ log.get_acao_display }}
+                        </span>
+                    </td>
+                    <td style="color: #555;">{{ log.detalhes|default:"-" }}</td>
+                    <td style="font-family: monospace; color: #777;">{{ log.ip_usuario|default:"-" }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="5">Nenhum registro encontrado.</td></tr>
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 30px; color: #777;">
+                        Nenhum registro encontrado com os filtros atuais.
+                    </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <br>
-        <a href="{% url 'organizador_dashboard' %}">Voltar</a>
     </div>
-</body>
-</html>
+
+    <div style="margin-top: 20px;">
+        <a href="{% url 'organizador_dashboard' %}" class="btn btn-secondary">
+            &larr; Voltar
+        </a>
+    </div>
+</div>
+{% endblock %}

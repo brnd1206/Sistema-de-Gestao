@@ -1,74 +1,73 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard do Organizador</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1100px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #007bff; padding-bottom: 15px; margin-bottom: 25px; }
-        .header h1 { margin: 0; }
-        .header .logout-form button { background-color: #d9534f; color: white; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .header .logout-form button:hover { background-color: #c9302c; }
-        .btn-primary { background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-bottom: 20px; }
-        .btn-primary:hover { background-color: #0056b3; }
-        .table { width: 100%; border-collapse: collapse; }
-        .table th, .table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-        .table th { background-color: #f2f2f2; }
-        .table tr:nth-child(even) { background-color: #f9f9f9; }
-        .actions a { margin-right: 10px; color: #007bff; text-decoration: none; }
-        .actions a.delete { color: #d9534f; }
-        .actions a.manage { color: #28a745; } /* Estilo para o novo link */
-        .no-events { color: #777; font-style: italic; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Meus Eventos</h1>
-            <form action="{% url 'logout' %}" method="post" class="logout-form">
-                {% csrf_token %}
-                <button type="submit">Sair</button>
-            </form>
-        </div>
+{% extends 'sgea_app/base.html' %}
 
-        <div style="margin-bottom: 20px;">
-            <a href="{% url 'criar_evento' %}" class="btn-primary">Criar Novo Evento</a>
-            <a href="{% url 'organizador_cadastrar_participante' %}" class="btn-primary" style="background-color: #17a2b8;">Cadastrar Participante</a>
-            <a href="{% url 'logs_auditoria' %}" class="btn-primary" style="background-color: #343a40;">Logs de Auditoria</a>
-        </div>
+{% block title %}Dashboard do Organizador - UniEvents{% endblock %}
 
-        {% if eventos %}
-            <table class="table">
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">
+        <h1 style="margin: 0;"><i class="fas fa-calendar-alt"></i> Meus Eventos</h1>
+    </div>
+
+    <div style="margin-bottom: 30px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{% url 'criar_evento' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> Criar Novo Evento
+        </a>
+        <a href="{% url 'organizador_cadastrar_participante' %}" class="btn btn-secondary">
+            <i class="fas fa-user-plus"></i> Cadastrar Participante
+        </a>
+        <a href="{% url 'logs_auditoria' %}" class="btn" style="background-color: #34495e; color: white;">
+            <i class="fas fa-history"></i> Logs de Auditoria
+        </a>
+    </div>
+
+    {% if eventos %}
+        <div class="table-responsive">
+            <table>
                 <thead>
                     <tr>
                         <th>Nome do Evento</th>
-                        <th>Data de Início</th>
-                        <th>Data de Término</th>
+                        <th>Início</th>
+                        <th>Término</th>
                         <th>Inscritos</th>
-                        <th>Ações</th>
+                        <th style="text-align: center;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for evento in eventos %}
                     <tr>
-                        <td>{{ evento.nome }}</td>
+                        <td>
+                            <strong>{{ evento.nome }}</strong><br>
+                            <small style="color: #666;">{{ evento.local }}</small>
+                        </td>
                         <td>{{ evento.data_inicio|date:"d/m/Y H:i" }}</td>
                         <td>{{ evento.data_fim|date:"d/m/Y H:i" }}</td>
-                        <td>{{ evento.participantes.count }} / {{ evento.quantidade_participantes }}</td>
-                        <td class="actions">
-                            <a href="{% url 'atualizar_evento' evento.pk %}">Editar</a>
-                            <a href="{% url 'gerenciar_participantes' evento.pk %}" class="manage">Gerenciar</a>
-                            <a href="{% url 'deletar_evento' evento.pk %}" class="delete">Deletar</a>
+                        <td>
+                            <span style="font-weight: bold; color: var(--primary-color);">{{ evento.participantes.count }}</span> 
+                            / {{ evento.quantidade_participantes }}
+                        </td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; justify-content: center; gap: 5px;">
+                                <a href="{% url 'atualizar_evento' evento.pk %}" class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8rem;" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'gerenciar_participantes' evento.pk %}" class="btn btn-success" style="padding: 5px 10px; font-size: 0.8rem;" title="Gerenciar Participantes">
+                                    <i class="fas fa-users-cog"></i>
+                                </a>
+                                <a href="{% url 'deletar_evento' evento.pk %}" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" title="Excluir">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        {% else %}
-            <p class="no-events">Você ainda não criou nenhum evento. Clique no botão acima para começar.</p>
-        {% endif %}
-    </div>
-</body>
-</html>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px; background: #f9f9f9; border-radius: 8px;">
+            <p style="color: #666; font-size: 1.2rem; margin-bottom: 15px;">Você ainda não criou nenhum evento.</p>
+            <a href="{% url 'criar_evento' %}" class="btn btn-primary">Começar Agora</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

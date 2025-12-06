@@ -1,179 +1,136 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard do Participante - SGEA</title>
-    <style>
-    body { font-family: Arial, sans-serif; background-color: #f8f9fa; color: #333; line-height: 1.6; margin: 0; padding: 20px; }
-    .container { max-width: 960px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+{% extends 'sgea_app/base.html' %}
 
-    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #007bff; padding-bottom: 15px; margin-bottom: 25px; }
-    .header h1 { margin: 0; }
-    .header .logout-form button { background-color: #d9534f; color: white; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px; }
+{% block title %}Painel do Aluno - UniEvents{% endblock %}
 
-    h2 { color: #007bff; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 40px; }
+{% block content %}
 
-    .event-list { list-style: none; padding: 0; }
-    .event-item { background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-
-    .event-details h3 { margin-top: 0; color: #555; }
-    .event-details p { margin: 5px 0; font-size: 0.9em; }
-
-    /* --- INÍCIO DAS CORREÇÕES DOS BOTÕES --- */
-    .event-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center; /* Alinha os botões verticalmente ao centro */
-    }
-
-    /* Remove margens extras do formulário que atrapalham o alinhamento */
-    .event-actions form {
-        margin: 0;
-        display: flex;
-    }
-
-    /* Estilo unificado para garantir que <a> e <button> fiquem iguais */
-    .event-actions .btn {
-        border: 1px solid transparent; /* Iguala o box-model */
-        padding: 10px 15px;
-        border-radius: 5px;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        text-decoration: none;
-        font-size: 14px;
-        line-height: 1.5;
-        display: inline-flex; /* Centraliza conteúdo (texto/ícone) */
-        align-items: center;
-        justify-content: center;
-        height: 42px; /* Altura fixa para garantir uniformidade */
-        box-sizing: border-box;
-    }
-
-    /* Cores dos Botões */
-    .btn-success { background-color: #28a745; }
-    .btn-danger { background-color: #d9534f; }
-
-    /* Botão Azul (Detalhes) */
-    .btn-primary { background-color: #007bff; }
-    .btn-primary:hover { background-color: #0056b3; }
-    /* --- FIM DAS CORREÇÕES --- */
-
-    .no-events, .no-certificates { color: #777; font-style: italic; }
-
-    .messages { list-style: none; padding: 0; margin-bottom: 20px; }
-    .messages li { padding: 15px; margin-bottom: 10px; border-radius: 4px; }
-    .messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .messages .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-    .messages .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-
-    /* Tabela de Certificados */
-    .table { width: 100%; border-collapse: collapse; margin-top: 15px;}
-    .table th, .table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-    .table th { background-color: #f2f2f2; }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="header">
-            <h1>Olá, {{ user.first_name|default:user.username }}!</h1>
-            <form action="{% url 'logout' %}" method="post" class="logout-form">
-                {% csrf_token %}
-                <button type="submit">Sair</button>
-            </form>
-        </div>
-
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li class="{{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        {% if user.perfil == 'professor' %}
-            <h2>Eventos sob Minha Responsabilidade</h2>
-            {% if eventos_responsavel %}
-                <ul class="event-list">
-                    {% for evento in eventos_responsavel %}
-                        <li class="event-item">
-                            <div class="event-details">
-                                <h3>
-                                    <a href="{% url 'detalhes_evento' evento.pk %}" style="text-decoration: none; color: #007bff;">
-                                        {{ evento.nome }}
-                                    </a>
-                                </h3>
-                                <p><strong>Local:</strong> {{ evento.local }}</p>
-                                <p><strong>Início:</strong> {{ evento.data_inicio|date:"d/m/Y, H:i" }} | <strong>Término:</strong> {{ evento.data_fim|date:"d/m/Y, H:i" }}</p>
-                                <p><strong>Inscritos:</strong> {{ evento.participantes.count }} / {{ evento.quantidade_participantes }}</p>
-                            </div>
-                            <div class="event-actions">
-                                <a href="{% url 'detalhes_evento' evento.pk %}" class="btn btn-primary">Detalhes</a>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="no-events">Você não é responsável por nenhum evento no momento.</p>
-            {% endif %}
-        {% endif %}
-
-        <h2>Meus Eventos Inscritos</h2>
-        {% if eventos_inscritos %}
-            <ul class="event-list">
-                {% for evento in eventos_inscritos %}
-                    <li class="event-item">
-                        <div class="event-details">
-                            <h3>{{ evento.nome }}</h3>
-                            <p><strong>Local:</strong> {{ evento.local }} | <strong>Início:</strong> {{ evento.data_inicio|date:"d/m/Y, H:i" }} |
-                            <strong>Término:</strong> {{ evento.data_fim|date:"d/m/Y, H:i" }} </p>
-                        </div>
-                        <div class="event-actions">
-                            <a href="{% url 'detalhes_evento' evento.pk %}" class="btn btn-primary">Detalhes</a>
-
-                            <form action="{% url 'cancelar_inscricao' evento.pk %}" method="post" style="margin: 0;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">Cancelar Inscrição</button>
-                            </form>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="no-events">Você ainda não se inscreveu em nenhum evento.</p>
-        {% endif %}
-
-        <h2>Eventos Disponíveis</h2>
-        {% if eventos_disponiveis %}
-            <ul class="event-list">
-                {% for evento in eventos_disponiveis %}
-                    <li class="event-item">
-                        <div class="event-details">
-                            <h3><a href="{% url 'detalhes_evento' evento.pk %}" style="text-decoration: none; color: #007bff;">{{ evento.nome }}</a></h3>
-                            <p><strong>Local:</strong> {{ evento.local }} | <strong>Início:</strong> {{ evento.data_inicio|date:"d/m/Y, H:i" }}</p>
-                        </div>
-                        <div class="event-actions">
-                            <form action="{% url 'inscrever_evento' evento.pk %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-success">Inscrever-se</button>
-                            </form>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="no-events">Não há eventos disponíveis no momento.</p>
-        {% endif %}
-        
-        <h2>Meus Certificados</h2>
-        {% if certificados_obtidos %}
-            <table class="table">
+{% if user.perfil == 'professor' %}
+<div class="card">
+    <h2 style="color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 10px;">
+        <i class="fas fa-chalkboard-teacher"></i> Eventos sob Minha Responsabilidade
+    </h2>
+    {% if eventos_responsavel %}
+        <div class="table-responsive">
+            <table>
                 <thead>
                     <tr>
                         <th>Evento</th>
-                        <th>Data de Emissão</th>
+                        <th>Local</th>
+                        <th>Período</th>
+                        <th>Ocupação</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos_responsavel %}
+                    <tr>
+                        <td><strong>{{ evento.nome }}</strong></td>
+                        <td>{{ evento.local }}</td>
+                        <td>{{ evento.data_inicio|date:"d/m" }} - {{ evento.data_fim|date:"d/m" }}</td>
+                        <td>{{ evento.participantes.count }} / {{ evento.quantidade_participantes }}</td>
+                        <td>
+                            <a href="{% url 'detalhes_evento' evento.pk %}" class="btn btn-primary" style="padding: 5px 15px; font-size: 0.9rem;">Ver</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: #666;">Você não é responsável por nenhum evento no momento.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="card">
+    <h2><i class="fas fa-user-check"></i> Minhas Inscrições</h2>
+    {% if eventos_inscritos %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Data e Hora</th>
+                        <th>Local</th>
+                        <th style="text-align: right;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos_inscritos %}
+                    <tr>
+                        <td><strong>{{ evento.nome }}</strong></td>
+                        <td>{{ evento.data_inicio|date:"d/m/Y H:i" }}</td>
+                        <td>{{ evento.local }}</td>
+                        <td style="text-align: right;">
+                            <a href="{% url 'detalhes_evento' evento.pk %}" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem; margin-right: 5px;">
+                                <i class="fas fa-info-circle"></i> Detalhes
+                            </a>
+                            <form action="{% url 'cancelar_inscricao' evento.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">
+                                    <i class="fas fa-times"></i> Sair
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="font-style: italic; color: #777;">Você ainda não se inscreveu em nenhum evento.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2><i class="fas fa-search-plus"></i> Eventos Disponíveis</h2>
+    {% if eventos_disponiveis %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Início</th>
+                        <th>Local</th>
+                        <th style="text-align: right;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos_disponiveis %}
+                    <tr>
+                        <td>
+                            <strong>{{ evento.nome }}</strong><br>
+                            <small>{{ evento.get_tipo_evento_display }}</small>
+                        </td>
+                        <td>{{ evento.data_inicio|date:"d/m/Y H:i" }}</td>
+                        <td>{{ evento.local }}</td>
+                        <td style="text-align: right;">
+                            <form action="{% url 'inscrever_evento' evento.pk %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success" style="padding: 8px 15px; font-size: 0.9rem;">
+                                    <i class="fas fa-pen"></i> Inscrever-se
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="font-style: italic; color: #777;">Não há novos eventos disponíveis para inscrição no momento.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2><i class="fas fa-certificate"></i> Meus Certificados</h2>
+    {% if certificados_obtidos %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Data Emissão</th>
                         <th>Código de Validação</th>
                     </tr>
                 </thead>
@@ -182,16 +139,19 @@
                     <tr>
                         <td>{{ certificado.inscricao.evento.nome }}</td>
                         <td>{{ certificado.data_emissao|date:"d/m/Y" }}</td>
-                        <td><strong>{{ certificado.codigo_validacao }}</strong></td>
+                        <td>
+                            <span style="font-family: monospace; background: #eee; padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc;">
+                                {{ certificado.codigo_validacao }}
+                            </span>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        {% else %}
-            <p class="no-certificates">Você ainda não possui nenhum certificado.</p>
-        {% endif %}
+        </div>
+    {% else %}
+        <p style="font-style: italic; color: #777;">Você ainda não possui certificados emitidos.</p>
+    {% endif %}
+</div>
 
-    </div>
-
-</body>
-</html>
+{% endblock %}
