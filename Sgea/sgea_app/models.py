@@ -1,8 +1,9 @@
-# models.py
-from django.core.validators import MinValueValidator, FileExtensionValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.core.validators import FileExtensionValidator, MinValueValidator
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 # --- Modelos de Usuário ---
 
@@ -76,6 +77,14 @@ class Evento(models.Model):
         related_name='eventos_inscritos',
         blank=True
     )
+    professor_responsavel = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='eventos_responsavel',
+        limit_choices_to={'perfil': 'professor'},
+        help_text="Professor responsável pelo evento."
+    )
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)
 
@@ -84,6 +93,19 @@ class Evento(models.Model):
         ordering = ["-data_inicio", "nome"]
         verbose_name = "Evento"
         verbose_name_plural = "Eventos"
+
+    def clean(self):
+        # Validação de Data
+        if self.data_inicio and self.data_inicio < timezone.now():
+            raise ValidationError({'data_inicio': 'A data de início não pode ser anterior à data atual.'})
+
+        # Validação extra: Data fim não pode ser antes do inicio
+        if self.data_inicio and self.data_fim and self.data_fim < self.data_inicio:
+            raise ValidationError({'data_fim': 'A data de término não pode ser anterior à data de início.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Chama o clean() antes de salvar
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.nome} - {self.data_inicio.strftime('%d/%m/%Y')}"

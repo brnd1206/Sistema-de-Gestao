@@ -59,7 +59,8 @@ class EventoForm(forms.ModelForm):
         model = Evento
         fields = [
             'nome', 
-            'tipo_evento', 
+            'tipo_evento',
+            'professor_responsavel',
             'data_inicio', 
             'data_fim', 
             'local', 
@@ -99,3 +100,5 @@ class EventoForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             if 'class' not in field.widget.attrs:
                 field.widget.attrs['class'] = 'form-control'
+        self.fields['professor_responsavel'].label = "Professor Responsável"
+        self.fields['professor_responsavel'].empty_label = "Selecione um Professor"

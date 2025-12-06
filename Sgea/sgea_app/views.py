@@ -78,6 +78,11 @@ def inscrever_evento(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
     
     if request.method == 'POST':
+        # Sistema não permitirá inscrição quando limite for atingido
+        if evento.participantes.count() >= evento.quantidade_participantes:
+            messages.error(request, f"Desculpe, as vagas para o evento '{evento.nome}' estão esgotadas.")
+            return redirect('participantes_dashboard')
+        # Inscrição Única (Verificação na View para mensagem amigável)
         ja_inscrito = Inscricao.objects.filter(usuario=request.user, evento=evento).exists()
         if not ja_inscrito:
             Inscricao.objects.create(usuario=request.user, evento=evento)

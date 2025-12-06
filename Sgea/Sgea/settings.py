@@ -87,14 +87,20 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
+    # Garante o mínimo de 8 caracteres
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
     },
+    # Impede senhas comuns (ex: 12345678, password)
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
+    # Validador personalizado
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'sgea_app.validators.ComplexPasswordValidator',
     },
 ]
 

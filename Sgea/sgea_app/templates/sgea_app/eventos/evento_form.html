@@ -13,9 +13,10 @@
         .btn-submit { background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
         .btn-submit:hover { background-color: #218838; }
         .back-link { display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none; }
+
+        /* OPCIONAL: Se quiser esconder a lista de erros de texto padrão do Django e deixar só o popup */
+        .errorlist { display: none; }
     </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -27,19 +28,32 @@
         </form>
         <a href="{% url 'organizador_dashboard' %}" class="back-link">Voltar para o Dashboard</a>
     </div>
-    <script>
-        $(document).ready(function(){
-            // Configuração do Datepicker (Linguagem PT-BR e formato)
-            $.datetimepicker.setLocale('pt-BR');
 
-            $('.datetimepicker').datetimepicker({
-                format:'Y-m-d H:i', // Formato que o Django espera (AAAA-MM-DD HH:MM)
-                formatTime:'H:i',
-                formatDate:'Y-m-d',
-                step: 30, // Intervalo de minutos
-                minDate: 0 // Impede seleção de datas passadas (opcional)
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% if form.errors %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let mensagensErro = '';
+
+            // Loop para pegar erros de todos os campos (data_inicio, data_fim, etc)
+            {% for field, error_list in form.errors.items %}
+                {% for error in error_list %}
+                    mensagensErro += '{{ error|escapejs }}\n'; // Concatena os erros
+                {% endfor %}
+            {% endfor %}
+
+            // Dispara o Popup Vermelho
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro de Validação',
+                text: mensagensErro,
+                confirmButtonColor: '#d9534f', // Vermelho para combinar com o tema
+                confirmButtonText: 'Corrigir'
             });
         });
     </script>
+    {% endif %}
+
 </body>
 </html>
