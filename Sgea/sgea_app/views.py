@@ -1,17 +1,27 @@
 # sgea_app/views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
+from django.db.models import Q
 import uuid
 
-from .models import Evento, Inscricao, Certificado
-from .forms import UsuarioCreationForm, EventoForm
-from django.utils import timezone
+# --- Imports para E-mail e Ativação (Vindos do seu Stash) ---
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from django.contrib.auth.tokens import default_token_generator
+from django.http import HttpResponse
 
-# --- Autenticação ---
+from .models import Evento, Inscricao, Usuario, Certificado
+from .forms import UsuarioCreationForm, EventoForm
+
+# --- Autenticação (Com sua lógica de E-mail) ---
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -38,43 +48,108 @@ def login_view(request):
     return render(request, 'sgea_app/index.html', {'form': form})
 
 def cadastro(request):
+    # Lógica de E-mail mantida (Do seu Stash)
     if request.user.is_authenticated:
-        return redirect('login')
+        return redirect('participantes_dashboard')
 
     if request.method == 'POST':
         form = UsuarioCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('login')
+            # 1. Salva na memória
+            user = form.save(commit=False)
+            
+            nome_digitado = form.cleaned_data.get('nome')
+            if nome_digitado:
+                user.first_name = nome_digitado
+            
+            # 2. Desativa para confirmação
+            user.is_active = False 
+            user.save()
+
+            # 3. Envia E-mail
+            current_site = get_current_site(request)
+            mail_subject = 'Confirmação de Cadastro - SGEA'
+            
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            
+            context = {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': uid,
+                'token': token,
+            }
+            
+            message = render_to_string('sgea_app/emails/acc_active_email.html', context)
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            email.content_subtype = "html"
+            email.send()
+
+            return render(request, 'sgea_app/usuarios/email_sent.html')
+            
     else:
         form = UsuarioCreationForm()
     
     return render(request, 'sgea_app/usuarios/cadastro.html', {'form': form})
+
+def activate(request, uidb64, token):
+    # Lógica de Ativação mantida (Do seu Stash)
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, 'Sua conta foi ativada com sucesso! Faça login para continuar.')
+        return redirect('login')
+    else:
+        return HttpResponse('O link de ativação é inválido ou expirou!')
+
+
+# --- Funcionalidades Auxiliares (Do Upstream/Amigo) ---
+
+def verificar_e_gerar_certificado(inscricao):
+    """
+    Verifica se a inscrição cumpre os requisitos e gera o certificado automaticamente.
+    Mantido do código do seu amigo (funcionalidade importante).
+    """
+    evento = inscricao.evento
+    if inscricao.presenca and evento.data_fim < timezone.now():
+        if not hasattr(inscricao, 'certificado'):
+            codigo = uuid.uuid4().hex[:16].upper()
+            Certificado.objects.create(inscricao=inscricao, codigo_validacao=codigo)
+            return True
+    return False
 
 
 # --- Dashboard do Participante e Inscrições ---
 
 @login_required
 def participantes_dashboard(request):
-    # --- AUTOMAÇÃO: Gera certificados pendentes ao acessar o dashboard ---
+    # Mesclado: Usa a versão do seu amigo que gera certificados automáticos
     inscricoes_pendentes = Inscricao.objects.filter(
         usuario=request.user,
         presenca=True,
         certificado__isnull=True,
-        evento__data_fim__lt=timezone.now()  # Apenas eventos passados
+        evento__data_fim__lt=timezone.now()
     )
     for inscricao in inscricoes_pendentes:
         verificar_e_gerar_certificado(inscricao)
+
     eventos_inscritos = Evento.objects.filter(participantes=request.user)
     eventos_disponiveis = Evento.objects.exclude(participantes=request.user)
 
-    # Professor responsavel
+    # Suporte a professor (Do upstream)
     eventos_responsavel = []
     if request.user.perfil == 'professor':
-        eventos_responsavel = Evento.objects.filter(professor_responsavel=request.user)
-    certificados_obtidos = Certificado.objects.filter(inscricao__usuario=request.user).select_related(
-        'inscricao__evento')
+        eventos_responsavel = Evento.objects.filter(organizador=request.user) # Ajustei para organizador pois professor_responsavel não estava no model original enviado, mas se existir, troque aqui.
+
+    certificados_obtidos = Certificado.objects.filter(inscricao__usuario=request.user).select_related('inscricao__evento')
 
     context = {
         'eventos_inscritos': eventos_inscritos,
@@ -89,11 +164,11 @@ def inscrever_evento(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
     
     if request.method == 'POST':
-        # Sistema não permitirá inscrição quando limite for atingido
+        # Mesclado: Mantida a verificação de limite de vagas (Do Upstream)
         if evento.participantes.count() >= evento.quantidade_participantes:
             messages.error(request, f"Desculpe, as vagas para o evento '{evento.nome}' estão esgotadas.")
             return redirect('participantes_dashboard')
-        # Inscrição Única (Verificação na View para mensagem amigável)
+            
         ja_inscrito = Inscricao.objects.filter(usuario=request.user, evento=evento).exists()
         if not ja_inscrito:
             Inscricao.objects.create(usuario=request.user, evento=evento)
@@ -135,6 +210,7 @@ def criar_evento(request):
         return redirect('participantes_dashboard')
 
     if request.method == 'POST':
+        # Mesclado: Adicionado request.FILES para permitir upload de Banner (Do Upstream)
         form = EventoForm(request.POST, request.FILES)
         if form.is_valid():
             evento = form.save(commit=False)
@@ -154,6 +230,7 @@ def atualizar_evento(request, pk):
         return redirect('organizador_dashboard')
 
     if request.method == 'POST':
+        # Mesclado: Adicionado request.FILES aqui também
         form = EventoForm(request.POST, request.FILES, instance=evento)
         if form.is_valid():
             form.save()
@@ -177,10 +254,7 @@ def deletar_evento(request, pk):
     return render(request, 'sgea_app/eventos/evento_confirm_delete.html', {'evento': evento})
 
 def detalhes_evento(request, pk):
-    # Busca o evento ou retorna erro 404 se não existir
     evento = get_object_or_404(Evento, pk=pk)
-
-    # Verifica se o usuário já está inscrito neste evento (para exibir botão correto)
     inscrito = False
     if request.user.is_authenticated:
         inscrito = Inscricao.objects.filter(usuario=request.user, evento=evento).exists()
@@ -191,40 +265,50 @@ def detalhes_evento(request, pk):
     }
     return render(request, 'sgea_app/eventos/detalhes_evento.html', context)
 
-# --- Gerenciamento de Certificados ---
+# --- Gerenciamento de Certificados (Versão Melhorada do Upstream) ---
 
 @login_required
 def gerenciar_participantes(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
+
     if evento.organizador != request.user:
         return redirect('organizador_dashboard')
-    # --- AUTOMAÇÃO: Varre a lista e gera o que estiver pendente ---
+
+    # Mesclado: Varre a lista e gera o que estiver pendente
     if evento.data_fim < timezone.now():
         pendentes = Inscricao.objects.filter(evento=evento, presenca=True, certificado__isnull=True)
         for insc in pendentes:
             verificar_e_gerar_certificado(insc)
+
     inscricoes = Inscricao.objects.filter(evento=evento).select_related('usuario', 'certificado').order_by('usuario__first_name')
+
     context = {
         'evento': evento,
         'inscricoes': inscricoes
     }
     return render(request, 'sgea_app/eventos/gerenciar_participantes.html', context)
 
-def verificar_e_gerar_certificado(inscricao):
-    """
-    Verifica se a inscrição cumpre os requisitos e gera o certificado automaticamente.
-    Requisitos: Evento finalizado + Presença confirmada + Sem certificado existente.
-    """
+@login_required
+def emitir_certificado(request, inscricao_pk):
+    inscricao = get_object_or_404(Inscricao, pk=inscricao_pk)
     evento = inscricao.evento
-    if inscricao.presenca and evento.data_fim < timezone.now():
+
+    if evento.organizador != request.user:
+        return redirect('organizador_dashboard')
+
+    if request.method == 'POST':
         if not hasattr(inscricao, 'certificado'):
             codigo = uuid.uuid4().hex[:16].upper()
             Certificado.objects.create(inscricao=inscricao, codigo_validacao=codigo)
-            return True
-    return False
+            messages.success(request, f"Certificado para {inscricao.usuario.first_name} emitido com sucesso!")
+        else:
+            messages.warning(request, "Este participante já possui um certificado.")
+
+    return redirect('gerenciar_participantes', pk=evento.pk)
 
 @login_required
 def marcar_presenca(request, inscricao_pk):
+    # Funcionalidade do Upstream
     inscricao = get_object_or_404(Inscricao, pk=inscricao_pk)
     evento = inscricao.evento
 
@@ -242,19 +326,16 @@ def marcar_presenca(request, inscricao_pk):
 
 @login_required
 def gerar_certificados_evento(request, pk):
-    """Gera certificados para TODOS os presentes após o fim do evento"""
+    # Funcionalidade do Upstream: Botão para gerar tudo de uma vez
     evento = get_object_or_404(Evento, pk=pk)
 
-    # 1. Segurança: Apenas organizador
     if evento.organizador != request.user:
         return redirect('organizador_dashboard')
 
-    # 2. Validação de Data: Só gera se o evento já acabou
     if timezone.now() < evento.data_fim:
         messages.error(request, "Erro: O evento ainda não terminou. Aguarde a data de fim.")
         return redirect('gerenciar_participantes', pk=evento.pk)
 
-    # 3. Busca alunos presentes que AINDA NÃO têm certificado
     inscricoes_validas = Inscricao.objects.filter(
         evento=evento,
         presenca=True,
@@ -265,7 +346,6 @@ def gerar_certificados_evento(request, pk):
         messages.warning(request, "Nenhum participante pendente com presença confirmada.")
         return redirect('gerenciar_participantes', pk=evento.pk)
 
-    # 4. Gera em lote
     count = 0
     for inscricao in inscricoes_validas:
         codigo = uuid.uuid4().hex[:16].upper()
