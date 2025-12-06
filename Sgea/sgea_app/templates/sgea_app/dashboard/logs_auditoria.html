@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registros de Auditoria</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
+        th { background-color: #343a40; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .back-link { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registros de Auditoria</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
+                    <th>Detalhes</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.data_hora|date:"d/m/Y H:i:s" }}</td>
+                    <td>{{ log.usuario.username }} ({{ log.usuario.perfil }})</td>
+                    <td>{{ log.get_acao_display }}</td>
+                    <td>{{ log.detalhes }}</td>
+                    <td>{{ log.ip_usuario }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">Nenhum registro encontrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'organizador_dashboard' %}" class="back-link">&larr; Voltar ao Dashboard</a>
+    </div>
+</body>
+</html>
