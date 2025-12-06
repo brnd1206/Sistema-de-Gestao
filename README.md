@@ -41,12 +41,20 @@ O sistema SGEA oferece as seguintes funcionalidades principais:
 
 ---
 
-## 📋 Pré-requisitos
+## 🚀 Guia de Instalação e Execução
 
-Você precisará ter instalado em sua máquina:
+Siga os passos abaixo para configurar o ambiente de desenvolvimento e executar o projeto em sua máquina local.
 
-* **Python 3.13.7**
-* **Pip django**
+### Pré-requisitos
+* **Python 3.13+** instalado.
+* **Git** instalado.
+
+### Passo a Passo
+
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/brnd1206/sistema-de-gestao.git
+   cd sistema-de-gestao/Sgea
 
 ---
 
