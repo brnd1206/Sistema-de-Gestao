@@ -119,7 +119,7 @@ def criar_evento(request):
         return redirect('participantes_dashboard')
 
     if request.method == 'POST':
-        form = EventoForm(request.POST)
+        form = EventoForm(request.POST, request.FILES)
         if form.is_valid():
             evento = form.save(commit=False)
             evento.organizador = request.user
@@ -138,7 +138,7 @@ def atualizar_evento(request, pk):
         return redirect('organizador_dashboard')
 
     if request.method == 'POST':
-        form = EventoForm(request.POST, instance=evento)
+        form = EventoForm(request.POST, request.FILES, instance=evento)
         if form.is_valid():
             form.save()
             return redirect('organizador_dashboard')
