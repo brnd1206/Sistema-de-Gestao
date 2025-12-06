@@ -56,6 +56,29 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento e executar o
    git clone https://github.com/brnd1206/sistema-de-gestao.git
    cd sistema-de-gestao/Sgea
 
+2. **Crie e ative um ambiente virtual**
+   ```bash
+   # Windows
+   python -m venv venv
+   venv\Scripts\activate
+
+   # Linux / Mac
+   python3 -m venv venv
+   source venv/bin/activate
+
+3. **Instale as dependências Execute o comando abaixo para instalar o Django, DRF e Pillow**
+   ```bash
+   pip install django pillow djangorestframework
+
+4. **Realize as migrações do banco de dados Crie as tabelas necessárias no SQLite**
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+
+5. **Execute o servidor local**
+   ```bash
+   python manage.py runserver
+   
 ---
 
 ## 📖 Casos de Usos
