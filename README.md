@@ -67,7 +67,7 @@ source venv/bin/activate
 
 #### 3️⃣ Instalar dependências
 ```bash
-pip install django pillow djangorestframework
+pip install django djangorestframework pillow python-dotenv
 ```
 
 #### 4️⃣ Criar as tabelas do banco
