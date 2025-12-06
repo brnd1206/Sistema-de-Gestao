@@ -1,27 +1,28 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro Realizado</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+{% extends 'sgea_app/base.html' %}
 
-    <div class="container" style="text-align: center; margin-top: 100px;">
-        <div class="card shadow-sm">
-            <div class="card-body p-5">
-                <h2 class="text-success mb-4">Cadastro Realizado com Sucesso!</h2>
-                
-                <p class="lead">Enviamos um link de confirmação para o seu e-mail.</p>
-                <p class="text-muted">Por favor, verifique sua caixa de entrada (e a pasta de spam) para ativar sua conta.</p>
-                
-                <hr class="my-4">
-                
-                <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Voltar para Login</a>
-            </div>
+{% block title %}Cadastro Realizado - UniEvents{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 80px auto; text-align: center;">
+    <div class="card" style="padding: 40px;">
+        <div style="font-size: 3rem; color: var(--success); margin-bottom: 20px;">
+            <i class="fas fa-envelope-open-text"></i>
         </div>
+        
+        <h2 style="color: var(--success); margin-bottom: 20px;">Cadastro Realizado com Sucesso!</h2>
+        
+        <p style="font-size: 1.1rem; margin-bottom: 10px;">
+            Enviamos um link de confirmação para o seu e-mail.
+        </p>
+        <p style="color: #666; margin-bottom: 30px;">
+            Por favor, verifique sua caixa de entrada (e a pasta de spam) para ativar sua conta e começar a usar o UniEvents.
+        </p>
+        
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+        
+        <a href="{% url 'login' %}" class="btn btn-primary">
+            Voltar para Login
+        </a>
     </div>
-
-</body>
-</html>
+</div>
+{% endblock %}

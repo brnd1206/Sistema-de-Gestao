@@ -1,30 +1,49 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Participante</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px; }
-        .container { max-width: 500px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #333; }
-        .btn-submit { background-color: #28a745; color: white; padding: 10px; width: 100%; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px;}
-        .back-link { display: block; text-align: center; margin-top: 15px; color: #007bff; text-decoration: none; }
-    </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-</head>
-<body>
-    <div class="container">
-        <h1>Novo Participante</h1>
+{% extends 'sgea_app/base.html' %}
+{% load static %}
+
+{% block title %}Novo Participante - Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 40px auto;">
+    <div class="card">
+        <h1 style="text-align: center;">
+            <i class="fas fa-user-shield"></i> Cadastrar Participante
+        </h1>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">
+            Área administrativa para inclusão manual de usuários.
+        </p>
+
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn-submit">Cadastrar Usuário</button>
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--danger); font-size: 0.9em;">{{ field.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                Salvar Usuário
+            </button>
         </form>
-        <a href="{% url 'organizador_dashboard' %}" class="back-link">Voltar ao Dashboard</a>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'organizador_dashboard' %}" class="btn btn-secondary">
+                Voltar ao Dashboard
+            </a>
+        </div>
     </div>
-    <script>
-        $(document).ready(function(){ $('#id_telefone').mask('(00) 00000-0000'); });
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+    $(document).ready(function(){ $('#id_telefone').mask('(00) 00000-0000'); });
+</script>
+{% endblock %}

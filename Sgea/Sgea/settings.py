@@ -144,6 +144,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+import os
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'sgea_app/static'),
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -158,7 +163,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # --- Configuração de E-mail REAL (Gmail) ---
-# Adicionado por você (Stash), usando as variáveis protegidas
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
