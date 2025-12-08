@@ -66,8 +66,9 @@ source venv/bin/activate
 ```
 
 #### 3️⃣ Instalar dependências
-bash
+```bash
 pip install django djangorestframework pillow python-dotenv
+```
 
 #### 4️⃣ Configurar Variáveis de Ambiente (.env)
 O sistema utiliza variáveis de ambiente para o envio de e-mails.
@@ -83,13 +84,15 @@ O sistema utiliza variáveis de ambiente para o envio de e-mails.
     > **Nota:** A senha deve ser uma "Senha de App" gerada nas configurações de segurança da sua conta Google, e não a sua senha de login habitual.
 
 #### 5️⃣ Criar as tabelas do banco
-bash
+```bash
 python manage.py makemigrations
 python manage.py migrate
+```
 
 #### 6️⃣ Executar o servidor
-bash
+```bash
 python manage.py runserver
+```
 
 ---
 
