@@ -36,6 +36,7 @@ urlpatterns = [
 
     # --- Gestão de Participantes e Certificados ---
     path('evento/<int:pk>/participantes/', views.gerenciar_participantes, name='gerenciar_participantes'),
+    path('certificado/<str:codigo>/', views.visualizar_certificado, name='visualizar_certificado'),
     
     # Rota nova do seu amigo (Marcar Presença)
     path('inscricao/<int:inscricao_pk>/presenca/', views.marcar_presenca, name='marcar_presenca'),

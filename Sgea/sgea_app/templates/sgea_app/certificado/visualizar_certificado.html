@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificado - {{ evento.nome }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Open+Sans:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #ccc;
+            font-family: 'Open Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .certificado-container {
+            width: 297mm; /* Tamanho A4 Paisagem */
+            height: 210mm;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .borda-externa {
+            border: 5px solid #0a2342; /* Sua cor primária */
+            height: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .borda-interna {
+            border: 2px solid #c59d5f; /* Sua cor secundária */
+            height: 100%;
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: center;
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(244,246,248,1) 100%);
+        }
+
+        h1 {
+            font-family: 'Pinyon Script', cursive;
+            font-size: 5rem;
+            color: #0a2342;
+            margin: 0 0 20px 0;
+        }
+
+        .subtitulo {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: #c59d5f;
+            margin-bottom: 40px;
+        }
+
+        .conteudo {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 50px;
+        }
+
+        .destaque {
+            font-weight: bold;
+            font-size: 1.8rem;
+            color: #0a2342;
+            border-bottom: 1px solid #ccc;
+            padding: 0 10px;
+        }
+
+        .assinaturas {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 60px;
+        }
+
+        .linha-assinatura {
+            width: 250px;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+        }
+
+        .rodape {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .codigo {
+            font-family: monospace;
+            background: #eee;
+            padding: 2px 5px;
+        }
+
+        /* Botão de Imprimir (Só aparece na tela) */
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #0a2342;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        @media print {
+            body { background: none; }
+            .certificado-container { box-shadow: none; margin: 0; width: 100%; height: 100%; }
+            .btn-print { display: none; }
+            @page { size: landscape; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <button onclick="window.print()" class="btn-print">🖨️ Imprimir / Salvar PDF</button>
+
+    <div class="certificado-container">
+        <div class="borda-externa">
+            <div class="borda-interna">
+                <h1>Certificado</h1>
+                <div class="subtitulo">De Participação</div>
+
+                <p class="conteudo">
+                    Certificamos que <span class="destaque">{{ participante.first_name }} {{ participante.last_name }}</span><br>
+                    participou com êxito do evento <span class="destaque">{{ evento.nome }}</span>,<br>
+                    realizado em <strong>{{ evento.local }}</strong>,
+                    no período de {{ evento.data_inicio|date:"d/m/Y" }} a {{ evento.data_fim|date:"d/m/Y" }}.
+                </p>
+
+                <div class="assinaturas">
+                    <div style="text-align: center;">
+                        <div class="linha-assinatura">
+                            <strong>{{ evento.organizador.first_name }} {{ evento.organizador.last_name }}</strong><br>
+                            Organizador(a)
+                        </div>
+                    </div>
+
+                    {% if evento.professor_responsavel %}
+                    <div style="text-align: center;">
+                        <div class="linha-assinatura">
+                            <strong>{{ evento.professor_responsavel.first_name }} {{ evento.professor_responsavel.last_name }}</strong><br>
+                            Professor(a) Responsável
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="rodape">
+                    <p>Certificado emitido em {{ certificado.data_emissao|date:"d/m/Y" }}.</p>
+                    <p>Código de Validação: <span class="codigo">{{ certificado.codigo_validacao }}</span></p>
+                    <p>UniEvents - Gestão Acadêmica</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

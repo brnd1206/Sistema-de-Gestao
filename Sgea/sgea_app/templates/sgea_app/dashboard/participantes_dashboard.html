@@ -131,8 +131,8 @@
                     <tr>
                         <th>Evento</th>
                         <th>Data Emissão</th>
-                        <th>Código de Validação</th>
-                    </tr>
+                        <th>Código</th>
+                        <th style="text-align: center;">Ação</th> </tr>
                 </thead>
                 <tbody>
                     {% for certificado in certificados_obtidos %}
@@ -143,6 +143,11 @@
                             <span style="font-family: monospace; background: #eee; padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc;">
                                 {{ certificado.codigo_validacao }}
                             </span>
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'visualizar_certificado' certificado.codigo_validacao %}" target="_blank" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">
+                                <i class="fas fa-eye"></i> Visualizar
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}

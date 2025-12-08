@@ -54,6 +54,24 @@ def verificar_e_gerar_certificado(inscricao):
             return True
     return False
 
+@login_required
+def visualizar_certificado(request, codigo):
+    # Busca o certificado pelo código único
+    certificado = get_object_or_404(Certificado, codigo_validacao=codigo)
+
+    # Segurança: Garante que só o dono do certificado (ou um admin) possa ver
+    if certificado.inscricao.usuario != request.user and not request.user.is_superuser:
+        messages.error(request, "Você não tem permissão para visualizar este certificado.")
+        return redirect('participantes_dashboard')
+
+    context = {
+        'certificado': certificado,
+        'evento': certificado.inscricao.evento,
+        'participante': certificado.inscricao.usuario,
+        'data_hoje': timezone.now()
+    }
+    return render(request, 'sgea_app/certificado/visualizar_certificado.html', context)
+
 
 # --- Autenticação e Cadastro ---
 
