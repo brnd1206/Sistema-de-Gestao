@@ -83,7 +83,7 @@ O sistema utiliza variáveis de ambiente para o envio de e-mails.
     ```
     > **Nota:** A senha deve ser uma "Senha de App" gerada nas configurações de segurança da sua conta Google, e não a sua senha de login habitual.
 
-#### 5️⃣ Criar as tabelas do banco
+#### 5️⃣ Criar as tabelas do banco (caso não esteja criado)
 ```bash
 python manage.py makemigrations
 python manage.py migrate
