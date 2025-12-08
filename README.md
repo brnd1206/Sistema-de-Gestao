@@ -66,24 +66,44 @@ source venv/bin/activate
 ```
 
 #### 3️⃣ Instalar dependências
-```bash
+bash
 pip install django djangorestframework pillow python-dotenv
-```
 
-#### 4️⃣ Criar as tabelas do banco
-```bash
+#### 4️⃣ Configurar Variáveis de Ambiente (.env)
+O sistema utiliza variáveis de ambiente para o envio de e-mails.
+
+* **Modo Desenvolvimento (Sem E-mail Real):** Se você não criar o arquivo `.env`, o sistema detectará automaticamente e imprimirá os links de ativação de conta no **terminal/console** onde o servidor estiver rodando.
+* **Modo Produção (Com E-mail Real):** Para que os e-mails sejam enviados via Gmail:
+    1. Crie um arquivo chamado `.env` na pasta raiz (junto com o `manage.py`).
+    2. Copie o conteúdo do arquivo `.env.example` ou adicione manualmente:
+    ```env
+    EMAIL_USER=seu_email@gmail.com
+    EMAIL_PASSWORD=sua_senha_de_app_gerada_no_google
+    ```
+    > **Nota:** A senha deve ser uma "Senha de App" gerada nas configurações de segurança da sua conta Google, e não a sua senha de login habitual.
+
+#### 5️⃣ Criar as tabelas do banco
+bash
 python manage.py makemigrations
 python manage.py migrate
-```
 
-#### 5️⃣ Executar o servidor
-```bash
+#### 6️⃣ Executar o servidor
+bash
 python manage.py runserver
-```
 
 ---
 
 ## 🧪 Guia de Testes e Massa de Dados
+
+### 🔑 Credenciais de Teste
+
+Utilize os usuários abaixo para validar as funcionalidades de cada perfil:
+
+| Perfil | Usuário | Senha | Nível de Acesso |
+| :--- | :--- | :--- | :--- |
+| **Aluno** | `aluno` | `Aluno@123` | Inscrição em eventos, visualização de certificados. |
+| **Professor** | `professor` | `Professor@123` | Visualização de eventos sob sua responsabilidade. |
+| **Admin** | `admin` | `Admin@123` | **Superusuário**. Acesso total ao painel do organizador e admin do Django. |
 
 ### 1️⃣ Criar superusuário
 ```bash
