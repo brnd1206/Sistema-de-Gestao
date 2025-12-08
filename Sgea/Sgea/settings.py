@@ -8,7 +8,10 @@ from pathlib import Path
 from dotenv import load_dotenv # Adicionado para ler o .env
 
 # Carrega as variáveis de ambiente do arquivo .env
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Força o carregamento do .env que está na raiz (BASE_DIR)
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -144,7 +147,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-import os
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'sgea_app/static'),
 ]
