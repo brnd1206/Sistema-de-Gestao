@@ -9,16 +9,6 @@ from .serializers import EventoSerializer, InscricaoSerializer
 from .views import registrar_log
 from django.utils import timezone
 
-
-# 3.1. Consulta de Eventos
-class EventoListAPIView(generics.ListAPIView):
-    queryset = Evento.objects.all()
-    serializer_class = EventoSerializer
-    permission_classes = [IsAuthenticated]
-
-    # Define o escopo para limitar a 20 requisições/dia (configurado no settings)
-    throttle_scope = 'consulta_eventos'
-
 class InscricaoCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     throttle_scope = 'inscricao_participante'

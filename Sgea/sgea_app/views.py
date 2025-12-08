@@ -115,14 +115,24 @@ def cadastro(request):
                 'token': token,
             }
 
-            # Certifique-se de ter este template criado
             message = render_to_string('sgea_app/emails/acc_active_email.html', context)
             to_email = form.cleaned_data.get('email')
             email = EmailMessage(mail_subject, message, to=[to_email])
             email.content_subtype = "html"
             email.send()
 
-            return render(request, 'sgea_app/usuarios/email_sent.html')
+            try:
+                email.send(fail_silently=False)  # Tenta enviar
+                return render(request, 'sgea_app/usuarios/email_sent.html')  # Sucesso
+            except Exception as e:
+                # Se der erro (SMTP, Senha, Internet), cai aqui
+                print(
+                    f"ERRO AO ENVIAR E-MAIL: {e}")  # Mostra o erro no seu terminal preto (cmd) para você saber o que houve
+
+                # Opção A: Avisar o usuário e voltar para o login (Mais seguro)
+                messages.error(request,
+                               "Cadastro realizado, mas houve um erro ao enviar o e-mail de ativação. Entre em contato com o suporte.")
+                return redirect('login')
 
     else:
         form = UsuarioCreationForm()
