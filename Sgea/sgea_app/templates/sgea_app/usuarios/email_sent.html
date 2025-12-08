@@ -1,28 +1,79 @@
 {% extends 'sgea_app/base.html' %}
 
-{% block title %}Cadastro Realizado - UniEvents{% endblock %}
+{% block title %}Aguardando Confirmação - UniEvents{% endblock %}
 
 {% block content %}
 <div style="max-width: 600px; margin: 80px auto; text-align: center;">
     <div class="card" style="padding: 40px;">
-        <div style="font-size: 3rem; color: var(--success); margin-bottom: 20px;">
-            <i class="fas fa-envelope-open-text"></i>
+
+        <div style="margin-bottom: 20px; color: var(--secondary-color);">
+            <i class="fas fa-circle-notch fa-spin fa-4x"></i>
         </div>
-        
-        <h2 style="color: var(--success); margin-bottom: 20px;">Cadastro Realizado com Sucesso!</h2>
-        
-        <p style="font-size: 1.1rem; margin-bottom: 10px;">
+
+        <h2 style="color: var(--primary-color); margin-bottom: 10px;">Quase lá!</h2>
+
+        <p style="font-size: 1.2rem; margin-bottom: 20px;">
             Enviamos um link de confirmação para o seu e-mail.
         </p>
-        <p style="color: #666; margin-bottom: 30px;">
-            Por favor, verifique sua caixa de entrada (e a pasta de spam) para ativar sua conta e começar a usar o UniEvents.
+
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px;">
+            <p style="color: #555; margin: 0; font-size: 0.95rem;">
+                <i class="fas fa-envelope"></i> Estamos aguardando você clicar no link enviado...
+            </p>
+        </div>
+
+        <p style="color: #999; font-size: 0.9rem;">
+            Assim que você confirmar, esta página será atualizada automaticamente.
         </p>
-        
+
         <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
-        
-        <a href="{% url 'login' %}" class="btn btn-primary">
-            Voltar para Login
+
+        <a href="{% url 'login' %}" class="btn btn-secondary btn-sm">
+            Ir para Login manualmente
         </a>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userId = "{{ user_id }}"; // Pega o ID que passamos na View
+
+        // Verifica se o ID existe (para evitar erro se abrir a página direto)
+        if (!userId || userId === "None") {
+            console.warn("ID do usuário não fornecido.");
+            return;
+        }
+
+        // Monta a URL da API substituindo o '0' pelo ID real
+        const statusUrl = "{% url 'verificar_status_usuario' 0 %}".replace('0', userId);
+
+        // Função que verifica o status a cada 3 segundos
+        const verificarAtivacao = setInterval(function() {
+            fetch(statusUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Verificando status...", data); // Log para debug
+                    if (data.ativo === true) {
+                        // Se ativou, para o timer e redireciona
+                        clearInterval(verificarAtivacao);
+
+                        // Atualiza visual
+                        document.querySelector('h2').innerText = "Conta Confirmada!";
+                        const icon = document.querySelector('.fa-spin');
+                        if(icon) {
+                            icon.classList.remove('fa-spin', 'fa-circle-notch');
+                            icon.classList.add('fa-check-circle');
+                            icon.style.color = 'var(--success)';
+                        }
+
+                        // Redireciona após 1 segundo
+                        setTimeout(() => {
+                            window.location.href = "{% url 'login' %}";
+                        }, 1000);
+                    }
+                })
+                .catch(error => console.error('Erro ao verificar status:', error));
+        }, 3000); // 3000ms = 3 segundos
+    });
+</script>
 {% endblock %}

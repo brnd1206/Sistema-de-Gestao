@@ -14,6 +14,7 @@ urlpatterns = [
 
     # URL de Ativação por E-mail
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
+    path('api/status-usuario/<int:user_id>/', views.verificar_status_usuario, name='verificar_status_usuario'),
 
     # --- Dashboards ---
     path('dashboard/participante/', views.participantes_dashboard, name='participantes_dashboard'),

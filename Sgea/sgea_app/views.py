@@ -1,5 +1,5 @@
 # sgea_app/views.py
-
+from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
@@ -17,7 +17,10 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from django.contrib.auth.tokens import default_token_generator
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.conf import settings
+from django.core.mail import BadHeaderError
+from smtplib import SMTPException
 
 from .models import Evento, Inscricao, Certificado, LogAuditoria
 from .forms import UsuarioCreationForm, EventoForm
@@ -87,57 +90,65 @@ def cadastro(request):
     if request.method == 'POST':
         form = UsuarioCreationForm(request.POST)
         if form.is_valid():
-            # 1. Salva na memória mas não no banco ainda se for usar ativação
-            user = form.save(commit=False)
-
-            # Ajuste opcional para nome
-            nome_digitado = form.cleaned_data.get('nome')
-            if nome_digitado:
-                user.first_name = nome_digitado
-
-            # 2. Desativa para confirmação por email
-            user.is_active = False
-            user.save()
-
-            registrar_log(request, 'criacao_usuario', f"Autocadastro: {user.username}")
-
-            # 3. Envia E-mail de Ativação
-            current_site = get_current_site(request)
-            mail_subject = 'Confirmação de Cadastro - SGEA'
-
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-
-            context = {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': uid,
-                'token': token,
-            }
-
-            message = render_to_string('sgea_app/emails/acc_active_email.html', context)
-            to_email = form.cleaned_data.get('email')
-            email = EmailMessage(mail_subject, message, to=[to_email])
-            email.content_subtype = "html"
-            email.send()
-
             try:
-                email.send(fail_silently=False)  # Tenta enviar
-                return render(request, 'sgea_app/usuarios/email_sent.html')  # Sucesso
-            except Exception as e:
-                # Se der erro (SMTP, Senha, Internet), cai aqui
-                print(
-                    f"ERRO AO ENVIAR E-MAIL: {e}")  # Mostra o erro no seu terminal preto (cmd) para você saber o que houve
+                # O bloco atomic garante: se der erro aqui dentro, desfaz TUDO no banco
+                with transaction.atomic():
+                    # 1. Tenta Salvar o Usuário
+                    user = form.save(commit=False)
+                    if form.cleaned_data.get('nome'):
+                        user.first_name = form.cleaned_data.get('nome')
+                    user.is_active = False  # Nasce inativo
+                    user.save()
 
-                # Opção A: Avisar o usuário e voltar para o login (Mais seguro)
+                    registrar_log(request, 'criacao_usuario', f"Tentativa de cadastro: {user.username}")
+
+                    # 2. Prepara o E-mail
+                    current_site = get_current_site(request)
+                    mail_subject = 'Confirmação de Cadastro - SGEA'
+                    uid = urlsafe_base64_encode(force_bytes(user.pk))
+                    token = default_token_generator.make_token(user)
+
+                    context = {
+                        'user': user,
+                        'domain': current_site.domain,
+                        'uid': uid,
+                        'token': token,
+                    }
+                    message = render_to_string('sgea_app/emails/acc_active_email.html', context)
+                    to_email = form.cleaned_data.get('email')
+                    email = EmailMessage(mail_subject, message, to=[to_email])
+                    email.content_subtype = "html"
+
+                    # 3. Verifica se tem senha configurada
+                    if not settings.EMAIL_HOST_PASSWORD:
+                        # Força o erro para acionar o rollback do banco
+                        raise Exception("Configuração de e-mail não encontrada (.env ausente).")
+
+                    # 4. Tenta Enviar
+                    email.send(fail_silently=False)
+
+                # Renderiza a tela de espera passando o ID do usuário para o JavaScript monitorar
+                return render(request, 'sgea_app/usuarios/email_sent.html', {'user_id': user.pk})
+
+            except (SMTPException, OSError, Exception) as e:
+                # SE DEU ERRO: O transaction.atomic já desfez o salvamento do usuário no banco.
+                print(f"⚠️ ROLLBACK EXECUTADO. Erro: {e}")
                 messages.error(request,
-                               "Cadastro realizado, mas houve um erro ao enviar o e-mail de ativação. Entre em contato com o suporte.")
-                return redirect('login')
+                               "Erro ao enviar e-mail de confirmação. O cadastro NÃO foi realizado. Verifique a internet ou contate o suporte.")
+                return redirect('cadastro')  # Volta para o formulário limpo ou mantendo dados
 
     else:
         form = UsuarioCreationForm()
 
     return render(request, 'sgea_app/usuarios/cadastro.html', {'form': form})
+
+def verificar_status_usuario(request, user_id):
+    """Verifica se o usuário já ativou a conta"""
+    try:
+        user = get_user_model().objects.get(pk=user_id)
+        return JsonResponse({'ativo': user.is_active})
+    except get_user_model().DoesNotExist:
+        return JsonResponse({'ativo': False})
 
 
 def activate(request, uidb64, token):
