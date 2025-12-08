@@ -76,7 +76,7 @@ O sistema utiliza variáveis de ambiente para o envio de e-mails.
 * **Modo Desenvolvimento (Sem E-mail Real):** Se você não criar o arquivo `.env`, o sistema detectará automaticamente e imprimirá os links de ativação de conta no **terminal/console** onde o servidor estiver rodando.
 * **Modo Produção (Com E-mail Real):** Para que os e-mails sejam enviados via Gmail:
     1. Crie um arquivo chamado `.env` na pasta raiz (junto com o `manage.py`).
-    2. Copie o conteúdo do arquivo `.env.example` ou adicione manualmente:
+    2. Adicione manualmente no `.env`:
     ```env
     EMAIL_USER=seu_email@gmail.com
     EMAIL_PASSWORD=sua_senha_de_app_gerada_no_google
