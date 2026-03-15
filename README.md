@@ -40,7 +40,7 @@ O foco do projeto está na **modelagem**, **backend em Django** e **estrutura de
 
 ## Guia de Instalação e Execução
 
-### 🔧 Pré-requisitos
+### Pré-requisitos
 - Python **3.13+**
 - Git
 
