@@ -1,17 +1,17 @@
-# 💻 Sistema de Gestão de Eventos Acadêmicos (SGEA)
+# Sistema de Gestão de Eventos Acadêmicos (SGEA)
 
 ![Status do Projeto](https://img.shields.io/badge/STATUS-CONCLUÍDO-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/PYTHON-3.13.7-blue?style=for-the-badge)
 
 ---
 
-## 📄 Sobre o Projeto
+## Sobre o Projeto
 
 O **Sistema de Gestão de Eventos Acadêmicos (SGEA)** é uma aplicação web desenvolvida para gerenciar eventos como seminários, palestras, minicursos e semanas acadêmicas.
 
 O foco do projeto está na **modelagem**, **backend em Django** e **estrutura de dados**, seguindo o padrão MVT e boas práticas de desenvolvimento.
 
-### 🎯 Objetivos Principais
+### Objetivos Principais
 
 - Modelagem e estruturação completa do projeto (apps, models, urls).
 - Criação de modelos robustos e integração com banco de dados.
@@ -20,7 +20,7 @@ O foco do projeto está na **modelagem**, **backend em Django** e **estrutura de
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **Backend:** Python + Django  
 - **Banco de Dados:** SQLite  
@@ -29,7 +29,7 @@ O foco do projeto está na **modelagem**, **backend em Django** e **estrutura de
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 1. **Cadastro e Autenticação de Usuários** (Alunos, Professores, Organizadores)  
 2. **Gestão de Eventos (Organizadores)** — criar, editar e excluir eventos  
@@ -38,7 +38,7 @@ O foco do projeto está na **modelagem**, **backend em Django** e **estrutura de
 
 ---
 
-## 🚀 Guia de Instalação e Execução
+## Guia de Instalação e Execução
 
 ### 🔧 Pré-requisitos
 - Python **3.13+**
@@ -46,15 +46,15 @@ O foco do projeto está na **modelagem**, **backend em Django** e **estrutura de
 
 ---
 
-### 📝 Passo a Passo
+### Passo a Passo
 
-#### 1️⃣ Clonar o repositório
+#### 1. Clonar o repositório
 ```bash
 git clone https://github.com/brnd1206/sistema-de-gestao.git
 cd sistema-de-gestao/Sgea
 ```
 
-#### 2️⃣ Criar e ativar ambiente virtual
+#### 2. Criar e ativar ambiente virtual
 ```bash
 # Windows
 python -m venv venv
@@ -65,12 +65,12 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-#### 3️⃣ Instalar dependências
+#### 3. Instalar dependências
 ```bash
 pip install django djangorestframework pillow python-dotenv
 ```
 
-#### 4️⃣ Configurar Variáveis de Ambiente (.env)
+#### 4. Configurar Variáveis de Ambiente (.env)
 O sistema utiliza variáveis de ambiente para o envio de e-mails.
 
 * **Modo Desenvolvimento (Sem E-mail Real):** Se você não criar o arquivo `.env`, o sistema detectará automaticamente e imprimirá os links de ativação de conta no **terminal/console** onde o servidor estiver rodando.
@@ -83,22 +83,22 @@ O sistema utiliza variáveis de ambiente para o envio de e-mails.
     ```
     > **Nota:** A senha deve ser uma "Senha de App" gerada nas configurações de segurança da sua conta Google, e não a sua senha de login habitual.
 
-#### 5️⃣ Criar as tabelas do banco (caso não esteja criado)
+#### 5. Criar as tabelas do banco (caso não esteja criado)
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-#### 6️⃣ Executar o servidor
+#### 6. Executar o servidor
 ```bash
 python manage.py runserver
 ```
 
 ---
 
-## 🧪 Guia de Testes e Massa de Dados
+## Guia de Testes e Massa de Dados
 
-### 🔑 Credenciais de Teste
+### Credenciais de Teste
 
 Utilize os usuários abaixo para validar as funcionalidades de cada perfil:
 
@@ -108,7 +108,7 @@ Utilize os usuários abaixo para validar as funcionalidades de cada perfil:
 | **Professor** | `professor` | `Professor@123` | Visualização de eventos sob sua responsabilidade. |
 | **Admin** | `admin` | `Admin@123` | **Superusuário**. Acesso total ao painel do organizador e admin do Django. |
 
-### 1️⃣ Criar superusuário
+### 1. Criar superusuário
 ```bash
 python manage.py createsuperuser
 ```
@@ -116,7 +116,7 @@ Siga as instruções para criar o usuário organizador.
 
 ---
 
-### 2️⃣ Roteiro de Testes Funcionais
+### 2. Roteiro de Testes Funcionais
 
 #### **Cenário A — Organizador**
 - Faça login como superusuário.
@@ -160,9 +160,9 @@ Authorization: Token SEU_TOKEN
 
 ---
 
-## 📖 Casos de Uso
+## Casos de Uso
 
-### 🟦 1. Casos de Acesso
+### 1. Casos de Acesso
 
 | ID | Caso de Uso | Ator | Objetivo |
 |----|-------------|------|----------|
@@ -171,7 +171,7 @@ Authorization: Token SEU_TOKEN
 
 ---
 
-### 🟩 2. Usuário Comum (Aluno / Professor)
+### 2. Usuário Comum (Aluno / Professor)
 
 | ID | Caso de Uso | Ator | Objetivo |
 |----|-------------|------|----------|
@@ -182,7 +182,7 @@ Authorization: Token SEU_TOKEN
 
 ---
 
-### 🟥 3. Organizador
+### 3. Organizador
 
 | ID | Caso de Uso | Ator | Objetivo |
 |----|-------------|------|----------|
@@ -194,13 +194,13 @@ Authorization: Token SEU_TOKEN
 
 ---
 
-## 🤝 Contribuição
+## Contribuição
 
 Fique à vontade para abrir issues, enviar pull requests ou sugerir novas funcionalidades!
 
 ---
 
-## 👨‍💻 Autores
+## Autores
 
 | Nome | Perfil |
 |------|--------|
